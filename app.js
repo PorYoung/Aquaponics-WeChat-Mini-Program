@@ -3,12 +3,12 @@ const QQMapWX = require('./utils/qqmap-wx-jssdk.min.js')
 const config = {
   MaxHistoryLength: 8,
   // mqttHost: 'wxs://localhost:443',
-  mqttHost: 'wxs://fishV.smartaq.cn',
+  mqttHost: 'wxs://iot.smartaq.cn',
   mqttOptions: {
     connectTimeout: 4000,
     clean: false
   },
-  serverUrl: 'https://fishV.smartaq.cn',
+  serverUrl: 'https://iot.smartaq.cn',
   // serverHttpsUrl: 'https://localhost:443',
   permissionCheckUrl: '/api/permissionCheck',
   addServerHost: function(params) {
