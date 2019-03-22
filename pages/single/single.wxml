@@ -1,0 +1,211 @@
+<!--pages/single/single.wxml-->
+<view class='container {{showDeviceDetail || showDataDetail?"when-topbox-spread":""}}' scroll-y bindscroll='containerScroll'>
+  <!-- top box -->
+  <view class='topbox {{showDeviceDetail?"topbox-spread":""}}'>
+    <view class='device-bar {{showDeviceDetail?"device-bar-spread":""}}' bindtap='showDeviceDetail'>
+      <view class='goods-list-li'>
+        <view class='goods-list-main'>
+          <view class='s-avatar-wrap'>
+            <image src='{{device.avatarUrl}}' mode='aspectFill' class='goods-list-img s-avatar'></image>
+            <view class='badge primary radius capsule-badge s-time'>
+              <text>⏱</text>
+              <text>{{device.date}}</text>
+            </view>
+          </view>
+          <view class='goods-list-text'>
+            <view class='goods-list-top s-list-top'>
+              <view class='s-header'>
+                <view class='text-lg s-name'>{{device.name}}</view>
+                <view class='s-status sm {{device.status==0?"success-text":"warning-text"}}'>{{device.status==0?'正常':'异常'}}</view>
+              </view>
+              <view class='rating-item'>
+                <view class='rating-star'>
+                  <text wx:if='{{!!device.rate}}' wx:for="{{5}}" wx:key='index' class='iconfont {{device.rate>=3?"success-text":"warning-text"}} {{index<device.rate?"icon-favorfill":"icon-favor"}}'></text>
+                </view>
+                <view class='rating-text gray-text'>
+                  <text class='{{device.rate>=3?"success-text":"warning-text"}}'>{{device.rate}}</text>
+                </view>
+              </view>
+              <view class='s-address' wx:if='{{!!device.address}}'>
+                <text class='iconfont icon-location'></text>
+                <text class='gray-text'>{{device.address}}</text>
+              </view>
+            </view>
+            <view class='goods-list-foot s-list-foot'>
+              <view class='badge success radius capsule-badge c-tips'>
+                <text>⚐</text>
+                <text>{{device.tag}}</text>
+              </view>
+              <view class='badge round capsule-badge s-tips {{device.user?"secondary":"warning"}}'>
+                <text>{{device.user?'已绑定':'未绑定'}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class='device-bar-foot'>
+          <view class='s-notice {{showDeviceDetail?"":"s-notice-hidden"}}'>
+            <text class='iconfont icon-titles success-text'></text>
+            <text class='text-lg ml-xs'>设备编号: {{device._id}}</text>
+          </view>
+        </view>
+        <view class='list-box device-bar-detail {{showDeviceDetail?"device-bar-detail-spread":""}}'>
+          <view class='list-li'>
+            <view>
+              <text class='iconfont icon-titles success-text'></text>
+              <text class='text-lg ml-xs'>设备描述：</text>
+            </view>
+          </view>
+          <view class='device-description'>{{device.description}}</view>
+          <view class='list-li'>
+            <view>
+              <text class='iconfont icon-titles success-text'></text>
+              <text class='text-lg ml-xs'>设备主体：</text>
+            </view>
+            <view wx:if='{{!device.user}}'>尚未绑定</view>
+          </view>
+          <view class='form-box form-avatar-box' wx:if='{{!!device.user}}'>
+            <view class='form-avatar' style='background-image:url({{device.user.avatarUrl}})'>
+            </view>
+            <view class='form-avatar-item'>
+              <view class='form-item'>
+                <!-- <view class='form-title cur'>
+                  用户ID
+                </view> -->
+                <text style='font-weight:bold;'>ID: </text>
+                <text class='form-input'>{{device.user._id}}</text>
+              </view>
+              <view class='form-item'>
+                <!-- <view class='form-title cur'>
+                  用户名
+                </view> -->
+                <text style='font-weight:bold;'>用户名: </text>
+                <text class='form-input'>{{device.user.nickName}}</text>
+              </view>
+            </view>
+          </view>
+          <view class='list-li'>
+            <view>
+              <text class='iconfont icon-titles success-text'></text>
+              <text class='text-lg ml-xs'>负责人：</text>
+            </view>
+          </view>
+          <view class='form-box form-avatar-box'>
+            <view class='form-avatar' style='background-image:url({{device.manager.avatarUrl}})'>
+            </view>
+            <view class='form-avatar-item'>
+              <view class='form-item'>
+                <!-- <view class='form-title cur'>
+                  负责人ID
+                </view> -->
+                <text style='font-weight:bold;'>ID: </text>
+                <text class='form-input'>{{device.manager._id}}</text>
+              </view>
+              <view class='form-item'>
+                <!-- <view class='form-title cur'>
+                  负责人用户名
+                </view> -->
+                <text style='font-weight:bold;'>用户名: </text>
+                <text class='form-input'>{{device.manager.nickName}}</text>
+              </view>
+            </view>
+          </view>
+          <view class='list-li'>
+            <view>
+              <text class='iconfont icon-titles success-text'></text>
+              <text class='text-lg ml-xs'>设备图片</text>
+            </view>
+          </view>
+          <view class='doc-main'>
+            <view class='lattice-image'>
+              <view>
+                <image src='{{device.avatarUrl}}' mode='aspectFill'></image>
+              </view>
+              <view wx:for='{{device.images}}' wx:for-item='image'>
+                <image src='{{image}}' mode='aspectFill'></image>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class='iconfont icon-fold topbox-collapse'></view>
+  </view>
+  <!-- switch bar -->
+  <view class='topbar'>
+    <view class='topbar-food topbar-btn {{switchComment?"":"active"}}' bindtap='switchToContent'>
+      <text>数据</text>
+    </view>
+    <view class='topbar-comment topbar-btn {{switchComment?"active":""}}' bindtap='switchToComment'>
+      <text>记录</text>
+    </view>
+  </view>
+  <!-- content box -->
+  <view class='content-box' style='left:{{switchComment?"-100%":""}}'>
+    <view class='data-index {{showDataIndex?"showDataIndex":""}}' wx:for='{{dataIndex}}' wx:key='index' catchtap='showDataIndex'>
+      <view class='data-index-name'>
+        <text class='iconfont icon-titles warning-text'></text>
+        <text class='text-lg ml-xs'>{{item.n}}</text>
+      </view>
+      <view class='data-index-info' data-index-id='{{item.n}}'>
+        <view>{{item.v}}</view>
+        <block wx:if='{{item.v-item.min<0}}'>
+          <view class='data-index-progress'>
+            <text style='width:{{(item.min-item.v)/(item.max-item.min)>1?100:100*(item.min-item.v)/(item.max-item.min)}}%;background:#dd514c;'></text>
+            <text class='data-index-progress-text'>Min</text>
+            <text style='width:{{(item.min-item.v)/(item.max-item.min)>1?0:100*(1-(item.min-item.v)/(item.max-item.min))}}%;background:#eee;'></text>
+            <text class='data-index-progress-text'>Max</text>
+          </view>
+        </block>
+        <block wx:elif='{{item.v-item.max>0}}'>
+          <view class='data-index-progress'>
+            <text class='data-index-progress-text'>Min</text>
+            <text style='width:{{(item.v-item.max)/(item.max-item.min)>1?0:100*(1-(item.v-item.max)/(item.max-item.min))}}%;background:#eee;'></text>
+            <text class='data-index-progress-text'>Max</text>
+            <text style='width:{{(item.v-item.max)/(item.max-item.min)>1?100:100*(item.v-item.max)/(item.max-item.min)}}%;background:#dd514c;'></text>
+          </view>
+        </block>
+        <block wx:else>
+          <view class='data-index-progress'>
+            <text class='data-index-progress-text'>Min</text>
+            <text style='width:{{100*(item.v-item.min)/(item.max-item.min)}}%;background:#eee;'></text>
+            <text style='width:20%;background-color:#39b54a;'></text>
+            <text style='width:{{100*(item.max-item.v)/(item.max-item.min)}}%;background:#eee;'></text>
+            <text class='data-index-progress-text'>Max</text>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+  <!-- comment box -->
+  <view class='comment-box' style='left:{{switchComment?"0":""}}'>
+    <scroll-view class='comment-scroll' scroll-y>
+      <view class="comment" wx:for='{{[1,2,3,4,5,6]}}'>
+        <view class="comment-item ph-sm">
+          <view class="bar justify-between">
+            <view class="bar-fr bar">
+              <image src="http://www.diwuyuan.com/bbs/uc_server/data/avatar/000/00/02/52_avatar_big.jpg" class="round"></image>
+              <text class='ml-sm'>工号9527</text>
+              <text class="gray-text text-sm"> 3 小时前</text>
+            </view>
+          </view>
+          <view class="comment-mian">
+            <view class="comment-content">检修设备，无异常</view>
+            <view class="lattice-image">
+              <view style='background-image:url(http://image.weilanwl.com/img/4x3-1.jpg)'>
+              </view>
+              <view style='background-image:url(http://image.weilanwl.com/img/3x4-3.jpg)'>
+              </view>
+            </view>
+            <view class="comment-sub">
+              <view class="comment-sub-name">
+                <text class="success-text">顾客</text>
+                <text class="gray-text text-sm">2 分钟前</text>
+              </view>
+              <view class="comment-sub-content">感谢！</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

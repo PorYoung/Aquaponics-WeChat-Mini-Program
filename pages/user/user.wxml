@@ -1,0 +1,95 @@
+<!--pages/user/user.wxml-->
+<view class='container'>
+  <view class='user'>
+    <view class='user-top'>
+      <view class='user-img'>
+        <image src='{{userInfo&&userInfo.avatarUrl!=null?userInfo.avatarUrl:"/images/icon/404_2.png"}}' class='radius'></image>
+      </view>
+      <view class='user-text'>
+        <view class='user-sub cf'>
+          <view class='list-li'>
+            <view class='list-text'>
+              <view class='iconfont icon-medal danger-text'> </view> 用户ID:
+              <text>{{userInfo&&userInfo._id!=null?userInfo._id:'#请登录#'}}</text>
+            </view>
+          </view>
+          <view class='list-li'>
+            <view class='list-text'>
+              <view class='iconfont icon-medal danger-text'> </view> 用户名:
+              <text>{{userInfo&&userInfo.nickName!=null?userInfo.nickName:'#请登录#'}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class='user-bg' style='background-image:url(/images/default_bg.jpg)'>
+      </view>
+    </view>
+    <view class='user-nav icon-nav-box'>
+      <view class='icon-nav'>
+        <navigator url='./orders/orders' hover-class='none' class='icon-nav-navigator'>
+          <text class='iconfont icon-moneybagfill'></text>
+          <text class='icon-nav-text'>订单</text>
+        </navigator>
+        <navigator hover-class='none' class='icon-nav-navigator'>
+          <text class='iconfont icon-radiobox'></text>
+          <text class='icon-nav-text'>圈子</text>
+        </navigator>
+        <navigator hover-class='none' class='icon-nav-navigator'>
+          <text class='iconfont icon-cartfill'><text class='badge mark-badge'>9</text></text>
+          <text class='icon-nav-text'>购物车</text>
+        </navigator>
+        <navigator hover-class='none' class='icon-nav-navigator'>
+          <text class='iconfont icon-messagefill'><text class='badge mark-badge'>99+</text></text>
+          <text class='icon-nav-text'>消息</text>
+        </navigator>
+      </view>
+    </view>
+    <!-- Function Area -->
+    <view class='addDevicePanel flex flex-direction'>
+      <button class='{{addDeviceFromFlag?"primary":"gray"}} btn block lg' catchtap='addDeviceFromShow'>添加设备</button>
+      <form class='addDeviceForm form-box' style='height:{{addDeviceFromFlag==2?"700rpx":0}};opacity:{{addDeviceFromFlag==2?"1":0}};' hidden='{{!addDeviceFromFlag}}' bindsubmit='addDeviceSubmit'>
+        <view class='form-box form-avatar-box'>
+          <view class='form-avatar' catchtap='chooseDeviceAvatar' style='background-image:url({{deviceAvatarTempSrc}})'>
+            <text>修改/上传</text>
+          </view>
+          <view class='form-avatar-item'>
+            <view class='form-item'>
+              <view class='form-title cur'>
+                设备名称
+              </view>
+              <input name='deviceName' type='text' placeholder='设备名称' class='form-input'></input>
+            </view>
+            <view class='form-item'>
+              <view class='form-title cur'>
+                设备密码
+              </view>
+              <input name='devicePassword' type='password' placeholder='设备密码' class='form-input'></input>
+            </view>
+          </view>
+        </view>
+        <view class='form-item'>
+          <view class='form-title cur'>
+            重复密码
+          </view>
+          <input name='devicePasswordConfirm' type='password' placeholder='重复密码' class='form-input'></input>
+        </view>
+        <view class='form-item'>
+          <view class='form-title'>
+            设备标签
+          </view>
+          <input name='deviceTag' type='text' placeholder='设备标签(如:家用)'></input>
+        </view>
+        <view class='form-item form-textarea'>
+          <view class='form-title'>
+            设备说明
+          </view>
+          <textarea name='deviceDesc' placeholder='设备说明(最大255)' maxlength='255'></textarea>
+        </view>
+        <view class='btn-group-line flex'>
+          <button class='primary btn hollow sm' form-type='reset' catchtap='addDeviceFromShow'>取消</button>
+          <button class='primary btn hollow sm' form-type='submit'>添加</button>
+        </view>
+      </form>
+    </view>
+  </view>
+</view>

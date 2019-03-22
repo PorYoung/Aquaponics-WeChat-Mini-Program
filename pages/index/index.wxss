@@ -1,0 +1,35 @@
+@import '../display.wxss';
+
+/**index.wxss**/
+
+.category-nav {
+  overflow: hidden;
+}
+
+.category-nav .icon-nav {
+  height: auto;
+  width: 100%;
+  padding: 30rpx 0 0;
+  align-items: center;
+}
+
+.bindDevicePanel {
+  padding: 16rpx;
+  padding-bottom: 0;
+}
+
+.bindDeviceForm {
+  /* height: 0; */
+  transition: all 0.1s ease-in-out;
+}
+
+.btn-group-line {
+  padding: 8rpx;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.btn-group-line .btn {
+  font-size: 32rpx;
+  padding: 32rpx;
+}

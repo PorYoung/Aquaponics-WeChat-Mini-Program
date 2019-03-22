@@ -1,0 +1,133 @@
+/* pages/login/login.wxss */
+page{
+  overflow: hidden;
+}
+.header{
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+}
+.header>view{
+  width: 100%;
+}
+.rectImg{
+  height:100px;
+  background-image: linear-gradient(to bottom,#39b54a 0,#39b54a 10%,#a8e063);
+}
+.coverImg{
+  border-bottom: 80px solid #f6f7f9;
+  border-left: 100vw solid transparent;
+  position: absolute;
+  bottom: 0;
+}
+
+.title {
+  /* position: absolute; */
+  height: 150px;
+  top: 10rpx;
+  width: 100%;
+  font-size: 48rpx;
+}
+.vice-title{
+  font-size: 24rpx;
+  line-height: 48rpx;
+}
+.logoImg{
+  width: 60px;
+  height: 60px;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading {
+  font-size: 2rem;
+  /* animation: loading 3s ease-in-out infinite alternate; */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10rem;
+  height: 10rem;
+  /* border: 3px solid transparent; */
+  /* border-radius: 50%; */
+  /* border-image: linear-gradient(#a020f0, #214887); */
+  /* border-image-source: radial-gradient(#A020F0, #214887);
+  border-image-slice: 1;
+  border-image-width: 1; */
+}
+.loading::before{
+  content: ' ';
+  opacity: .3;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: loading 5s ease-in-out infinite alternate;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  border-image: linear-gradient(#39b54a, #a8e063);
+  background: radial-gradient(transparent, rgba(255, 255, 255, .2));
+  /* border-image-source: radial-gradient(#A020F0, #214887);
+  border-image-slice: 1;
+  border-image-width: 1; */
+}
+
+.loading-text {
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  /* animation: loading-text 3s ease-in-out infinite alternate; */
+}
+
+.account-text{
+  height: 68rpx;
+  width: 11rem;
+  text-align: center;
+  font-size: 42rpx;
+  padding: 8rpx 16rpx;
+  margin: 48rpx 0;
+  border-bottom: 6rpx solid rgba(57, 181, 74, .7);
+  border-radius: 8rpx;
+  /* color: #fff; */
+}
+.btn{
+  font-size: 48rpx;
+  padding: 24rpx;
+}
+
+.notice{
+  position: absolute;
+  height: 120px;
+  bottom: 10rpx;
+  width: 100%;
+  font-size: 24rpx;
+  line-height: 48rpx;
+}
+
+@keyframes loading-text {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes loading {
+  0% {
+    width: 8rem;
+    height: 8rem;
+    transform: rotate(0);
+    opacity: .3;
+  }
+
+  100% {
+    width: 12rem;
+    height: 12rem;
+    transform: rotate(360deg);
+    opacity: 1;
+  }
+}

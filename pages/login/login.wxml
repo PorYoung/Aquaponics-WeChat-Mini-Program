@@ -1,0 +1,26 @@
+<!--pages/login/login.wxml-->
+<!-- <image class='rectImg' mode='widthFix' src='/static/images/rect.png' style='height:128.593px;'></image> -->
+<view class='header'>
+  <view class='rectImg'></view>
+  <view class='coverImg'></view>
+</view>
+<view class='title textColor flexCenter'>
+  <!-- <text>Welcome To Order</text> -->
+  <image class='logoImg' src='{{elements.logoImg}}'></image>
+  <text>{{elements.title}}</text>
+  <text class='vice-title' wx:for='{{elements.viceTitle}}' wx:key='{{index}}'>{{item}}</text>
+</view>
+<view class='container'>
+  <view class='loading'>
+    <!-- <view class='account'>
+      <input class='account-text' placeholder='请输入手机号' maxlength='11' bindinput='accountPhoneInputHandle'></input>
+      <input class='account-text' placeholder='请输入密码' password maxlength='16' bindinput='accountUidInputHandle'></input>
+    </view> -->
+    <button class='loading-text btn' loading='{{loadingText=="waiting"}}' style='background-image: linear-gradient(135deg,#39b54a 0, #a8e063 {{gradientStop}}%, transparent {{gradientStop}}%, transparent {{gradientStop+3}}%, #a8e063 {{gradientStop+3}}%, #39b54a);'
+      open-type='getUserInfo' bindgetuserinfo="onGotUserInfo" disabled='{{loadingText!="登陆/绑定"}}'>{{loadingText}}</button>
+  </view>
+  <!-- <button class='loading-text btn' loading='{{loadingText=="waiting"}}' style='background-image: linear-gradient(135deg,#39b54a 0, #a8e063 {{gradientStop}}%, transparent {{gradientStop}}%, transparent {{gradientStop+3}}%, #a8e063 {{gradientStop+3}}%, #39b54a);' open-type='getUserInfo' bindgetuserinfo="onGotUserInfo">{{loadingText}}</button> -->
+</view>
+<view class='notice textColor flexCenter'>
+  <text wx:for='{{elements.notice}}' wx:key='index'>{{item}}</text>
+</view>

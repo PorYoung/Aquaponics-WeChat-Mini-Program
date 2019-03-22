@@ -1,0 +1,31 @@
+/* pages/user/user.wxss */
+
+.user {
+  background: inherit;
+  color: inherit;
+}
+
+.user-top {
+  background: #333;
+  color: #fff;
+}
+
+.addDevicePanel {
+  padding: 16rpx;
+}
+
+.addDeviceForm {
+  /* height: 0; */
+  transition: all 0.1s ease-in-out;
+}
+
+.btn-group-line {
+  padding: 8rpx;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.btn-group-line .btn {
+  font-size: 32rpx;
+  padding: 32rpx;
+}

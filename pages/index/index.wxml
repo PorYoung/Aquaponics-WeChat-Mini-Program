@@ -1,0 +1,141 @@
+<view class='container' style='overflow:{{searchFocus?"hidden":""}}'>
+  <!-- Search Bar -->
+  <view class="bar bgcolor search-bar">
+    <view class='mh-sm text-sm location' style='width:{{searchFocus?0:"126rpx"}};margin:{{searchFocus?0:"0 20rpx"}}'>
+      <text class="iconfont icon-location"></text>
+      <text bindtap='tapToGetLocation'>{{location.name || location.address}}</text>
+    </view>
+    <view class='search-round mh-sm'>
+      <text class="iconfont icon-search"></text>
+      <input class='search-input' value='{{searchValue}}' confirm-type='search' placeholder='serach' bindfocus='searchBoardOn' bindinput='searchSuggestion' bindconfirm='searchSubmit' />
+    </view>
+  </view>
+  <!-- Search Board -->
+  <view class='search-board' style='height:{{searchFocus?"100%":0}};opacity:{{searchFocus?1:0}}' bindtap='searchBoardOff'>
+    <view class='search-history list-box'>
+      <view class='list-li'>
+        <view class='iconfont icon-titles success-text'>历史记录</view>
+        <view class='delet-box iconfont icon-delete delete-history' catchtap='deleteHistory'></view>
+      </view>
+      <view class='list-box lattice-list'>
+        <view class='lattice-li history-item' wx:for='{{searchHistory}}' wx:for-item='history' wx:for-index='shid' wx:key='*this' data-shid='{{shid}}' catchtap='searchSubmit'>
+          {{history}}
+          <!-- <text class="lattice-text">
+          {{history.content}}
+        </text> -->
+        </view>
+      </view>
+    </view>
+    <view class='search-suggestion list-box'>
+      <view class='list-li'>
+        <view class='iconfont icon-titles success-text'>猜您在找</view>
+      </view>
+      <view class='list-box lattice-list'>
+        <view class='list-arrow lattice-li suggestion-item' wx:for='{{searchSuggestionResult}}' wx:for-item='ssr' wx:key='*this' wx:for-index='ssid' data-ssid='{{ssid}}' catchtap='searchSubmit'>
+          <view class="iconfont icon-search danger-text search-suggestion-icon"> </view>
+          <view class="lattice-text search-suggestion-text">
+            {{ssr}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <!-- Navigator Bar -->
+  <view class="icon-nav-box category-nav">
+    <view class="icon-nav">
+      <navigator hover-class="none" class="icon-nav-navigator" url='../search/search?sv=美食&category=美食'>
+        <image src='/images/icon/food.png' class='iconfont icon-image'></image>
+        <text class="icon-nav-text">资讯</text>
+      </navigator>
+      <navigator hover-class="none" class="icon-nav-navigator" url='../search/search?sv=商品超市&category=商品超市'>
+        <image src='/images/icon/store.png' class='iconfont icon-image'></image>
+        <text class="icon-nav-text">购买</text>
+      </navigator>
+      <navigator hover-class="none" class="icon-nav-navigator" url='../search/search?sv=蔬果生鲜&category=蔬果生鲜'>
+        <image src='/images/icon/vegetable.png' class='iconfont icon-image'></image>
+        <text class="icon-nav-text">疑问</text>
+      </navigator>
+      <navigator hover-class="none" class="icon-nav-navigator" url='../search/search?sv=甜品饮品&category=甜品饮品'>
+        <image src='/images/icon/dessert.png' class='iconfont icon-image'></image>
+        <text class="icon-nav-text">客服</text>
+      </navigator>
+    </view>
+  </view>
+  <!-- Function Area -->
+  <view class='bindDevicePanel flex flex-direction'>
+    <button class='{{bindDeviceFromFlag?"primary":"gray"}} btn block lg' catchtap='bindDeviceFromShow'>绑定新设备</button>
+    <form class='bindDeviceForm form-box' style='height:{{bindDeviceFromFlag==2?"480rpx":0}};opacity:{{bindDeviceFromFlag==2?"1":0}};' hidden='{{!bindDeviceFromFlag}}' bindsubmit='bindDeviceSubmit'>
+      <view class='form-item'>
+        <view class='form-title cur'>
+          设备编号
+        </view>
+        <input name='deviceId' type='text' placeholder='设备编号' class='form-input'></input>
+      </view>
+      <view class='form-item'>
+        <view class='form-title cur'>
+          设备密码
+        </view>
+        <input name='devicePassword' type='password' placeholder='设备密码'></input>
+      </view>
+      <view class='form-item'>
+        <view class='form-title cur'>
+          设备标签
+        </view>
+        <input name='deviceTag' type='text' placeholder='设备标签(如:家用)'></input>
+      </view>
+      <view class='form-item'>
+        <view class='form-title'>
+          设备名称
+        </view>
+        <input name='deviceName' type='text' placeholder='设备名称(非必需)' class='form-input'></input>
+      </view>
+      <view class='btn-group-line flex'>
+        <button class='primary btn hollow sm' form-type='reset' catchtap='bindDeviceFromShow'>取消</button>
+        <button class='primary btn hollow sm' form-type='submit'>绑定</button>
+      </view>
+    </form>
+  </view>
+  <!-- device lists -->
+  <view class='item-list-box mt-sm'>
+    <view class='goods-list-li' wx:for='{{deviceList}}' wx:key='index' wx:for-item='device' data-device-id='{{device._id}}' bindtap='navToSingle'>
+      <view class='goods-list-main'>
+        <view class='s-avatar-wrap'>
+          <image src='{{device.avatarUrl}}' mode='aspectFill' class='goods-list-img s-avatar'></image>
+          <view class='badge primary radius capsule-badge s-time'>
+            <text>⏱</text>
+            <text>{{device.date}}</text>
+          </view>
+        </view>
+        <view class='goods-list-text'>
+          <view class='goods-list-top s-list-top'>
+            <view class='s-header'>
+              <view class='text-lg s-name'>{{device.name}}</view>
+              <view class='s-status sm {{device.status==0? "success-text": "warning-text"}}'>{{device.status==0?'正常':'异常'}}</view>
+            </view>
+            <view class='rating-item'>
+              <view class='rating-star' wx:if='{{!!device.rate}}'>
+                <text wx:for="{{5}}" wx:key='index' class='iconfont {{device.rate>=3?"success-text":"warning-text"}} {{index<device.rate? "icon-favorfill": "icon-favor"}}'></text>
+              </view>
+              <view class='rating-text gray-text'>
+                <text class='{{device.rate>=3?"success-text":"warning-text"}}'>{{device.rate}}</text>
+              </view>
+            </view>
+            <view class='s-address' wx:if='{{!!device.address}}'>
+              <text class='iconfont icon-location'></text>
+              <text class='gray-text'>{{device.address}}</text>
+            </view>
+          </view>
+          <view class='goods-list-foot s-list-foot'>
+            <view class='badge success radius capsule-badge s-tips'>
+              <text>⚐</text>
+              <text>{{device.tag}}</text>
+            </view>
+            <view wx:if='{{userInfo.level!=0}}' class='badge round capsule-badge s-tips {{device.user?"secondary":"warning"}}'>
+              <text>{{device.user?'已绑定':'未绑定'}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
