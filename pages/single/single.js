@@ -1,4 +1,9 @@
 // pages/single/single.js
+/**
+ * 接下来任务
+ * http请求获取设备监测数据
+ * 有历史数据则调用mqttConnection连接mqtt建立mqtt通信，获取实时数据
+ */
 const app = getApp()
 const mqtt = require('../../utils/mqtt.min.js')
 const config = Object.assign({
@@ -15,7 +20,7 @@ Page({
     showDeviceDetail: false,
     showDataDetail: false,
     switchComment: false,
-
+    dataIndex: null
   },
   showDeviceDetail: function() {
     let that = this
@@ -101,10 +106,10 @@ Page({
     mqttClient = mqtt.connect(config.mqttHost, config.mqttOptions)
 
     mqttClient.on('connect', function() {
-      mqttClient.subscribe('/public/systemInfo');
-      mqttClient.subscribe('/device/' + that.data.device._id)
+      mqttClient.subscribe('public/info');
+      mqttClient.subscribe('device/' + that.data.device._id + '/data')
       console.log('connect');
-      console.log('订阅：/device/', that.data.device._id)
+      console.log('订阅：device/', that.data.device._id + '/data')
       that.setData({
         connStatus: 'connected'
       });
@@ -112,7 +117,14 @@ Page({
 
     mqttClient.on('message', function(topic, message) {
       // message is Buffer
-      console.log('收到来自', topic, '的消息', message.toString())
+      let json = null
+      try {
+        json = JSON.parse(message.toString())
+      } catch (e) {
+        console.log('收到来自', topic, '的消息', message.toString())
+        return
+      }
+      console.log('收到来自', topic, '的消息', json)
     })
 
     mqttClient.on('reconnect', (error) => {

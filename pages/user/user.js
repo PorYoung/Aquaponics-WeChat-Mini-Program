@@ -59,12 +59,14 @@ Page({
     if (!value.devicePassword || !value.devicePasswordConfirm) {
       wx.showToast({
         title: '请输入设备密码',
+        mask: true
       })
       return
     }
     if (value.devicePassword != value.devicePasswordConfirm) {
       wx.showToast({
         title: '两次密码不匹配',
+        mask: true
       })
       return
     }
@@ -86,15 +88,15 @@ Page({
         name: value.deviceName
       },
       success: function(res) {
-        if (res && res.data) {
+        if (res && res.statusCode == 200 && res.data) {
           let data = JSON.parse(res.data)
           if (data.errMsg == 403) {
             return app.loginRefresh()
           }
           if (data.errMsg == 1) {
             wx.showToast({
-              icon: 'success',
               title: '添加成功',
+              mask: true
             })
           } else {
             wx.showModal({

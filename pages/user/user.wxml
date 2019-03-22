@@ -45,7 +45,7 @@
       </view>
     </view>
     <!-- Function Area -->
-    <view class='addDevicePanel flex flex-direction'>
+    <view class='addDevicePanel flex flex-direction' wx:if='{{userInfo.level==1||userInfo.level==2}}'>
       <button class='{{addDeviceFromFlag?"primary":"gray"}} btn block lg' catchtap='addDeviceFromShow'>添加设备</button>
       <form class='addDeviceForm form-box' style='height:{{addDeviceFromFlag==2?"700rpx":0}};opacity:{{addDeviceFromFlag==2?"1":0}};' hidden='{{!addDeviceFromFlag}}' bindsubmit='addDeviceSubmit'>
         <view class='form-box form-avatar-box'>

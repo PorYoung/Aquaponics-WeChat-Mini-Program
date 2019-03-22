@@ -171,3 +171,18 @@
   border-bottom: 0.5rpx solid #0081ff;
   font-size: 24rpx;
 }
+
+.contentIsNull {
+  height: 680rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 48rpx;
+}
+
+.contentIsNull image {
+  height: 256rpx;
+  width: 256rpx;
+  padding: 30rpx;
+}

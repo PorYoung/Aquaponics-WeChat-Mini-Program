@@ -141,7 +141,7 @@
   </view>
   <!-- content box -->
   <view class='content-box' style='left:{{switchComment?"-100%":""}}'>
-    <view class='data-index {{showDataIndex?"showDataIndex":""}}' wx:for='{{dataIndex}}' wx:key='index' catchtap='showDataIndex'>
+    <view class='data-index {{showDataIndex?"showDataIndex":""}}' wx:for='{{dataIndex}}' wx:key='index' catchtap='showDataIndex' wx:hidden='{{!dataIndex}}'>
       <view class='data-index-name'>
         <text class='iconfont icon-titles warning-text'></text>
         <text class='text-lg ml-xs'>{{item.n}}</text>
@@ -174,6 +174,10 @@
           </view>
         </block>
       </view>
+    </view>
+    <view wx:hidden='{{dataIndex}}' class='contentIsNull'>
+      <image src='/images/icon/404_1.png' mode='aspectFill'></image>
+      <view class='warning-text'>暂时什么也没有</view>
     </view>
   </view>
   <!-- comment box -->

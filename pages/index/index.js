@@ -52,13 +52,13 @@ Page({
         order: -1
       },
       success: function(res) {
-        if (res && res.data) {
+        if (res && res.statusCode == 200 && res.data) {
           console.log('fetchOwnedDevice:', res.data)
           if (res.data.errMsg == 403) {
             return app.loginRefresh()
           }
           if (res.data.errMsg == 1) {
-            let devices = res.data.devices
+            let devices = res.data.devices || []
             devices.forEach((item) => {
               if (!!item.avatarUrl) {
                 item.avatarUrl = config.addServerHost(item.avatarUrl)
@@ -134,7 +134,7 @@ Page({
         name: value.deviceName
       },
       success: function(res) {
-        if (res && res.data) {
+        if (res && res.statusCode == 200 && res.data) {
           let data = res.data
           if (data.errMsg == 403) {
             return app.loginRefresh()
@@ -146,6 +146,7 @@ Page({
             })
             let device = res.data.device
             device.avatarUrl = config.addServerHost(device.avatarUrl)
+            device.date = config.toLocaleDateString(device.date)
             let deviceList = [device].concat(that.data.deviceList)
             that.setData({
               deviceList: deviceList
