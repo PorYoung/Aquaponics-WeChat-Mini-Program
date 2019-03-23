@@ -1,6 +1,30 @@
 <!--logs.wxml-->
-<view class="container log-list">
-  <block wx:for="{{logs}}" wx:for-item="log">
-    <text class="log-item">{{index + 1}}. {{log}}</text>
-  </block>
+<view class="bar solid-bottom mt-sm">
+  <view class='ml-sm'>
+    <text class='iconfont icon-titles success-text'></text>
+    <text class='text-lg ml-xs'>开发日志</text>
+  </view>
+</view>
+<view class='timeline'>
+  <view class="timeline-box">
+    <view class='timeline-item timeline-sm' wx:for="{{logs}}">
+      <view class='timeline-main'>
+        <view class='badge secondary radius capsule-badge'>
+          <text>{{item.date}}</text>
+          <text style='background:#fff;color:#888;'>{{item.time}}</text>
+          <text style='border-left:1rpx solid #1cbbb4;'>{{item.author}}</text>
+        </view>
+        <view class='mt-sm text-sm logs-content'>{{item.content}}</view>
+        <view class="lattice-image">
+          <view wx:for="{{item.images}}" wx:for-item="imageSrc">
+            <image src='{{imageSrc}}' mode='aspectFill'></image>
+          </view>
+        </view>
+        <!-- <view class='badge warning radius capsule-badge'>
+          <text>记录</text>
+          <text>{{item.author}}</text>
+        </view> -->
+      </view>
+    </view>
+  </view>
 </view>

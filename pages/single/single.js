@@ -3,6 +3,7 @@
  * 接下来任务
  * http请求获取设备监测数据
  * 有历史数据则调用mqttConnection连接mqtt建立mqtt通信，获取实时数据
+ * 增加删除设备功能deletDevice
  */
 const app = getApp()
 const mqtt = require('../../utils/mqtt.min.js')
@@ -55,6 +56,25 @@ Page({
   // 显示数据
   showDataIndex: function() {
 
+  },
+  // 删除设备
+  deleteDevice: function() {
+    let that = this
+    wx.showModal({
+      title: '提示',
+      content: '确定要删除该设备吗？删除后将无法复原，影响用户使用',
+      success: function(res) {
+        if (res.confirm) {
+          // 发送删除请求
+        }
+      },
+      fail: function() {
+        wx.showToast({
+          icon: 'none',
+          title: '删除失败',
+        })
+      }
+    })
   },
   /**
    * 生命周期函数--监听页面加载

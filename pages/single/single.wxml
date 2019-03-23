@@ -125,6 +125,10 @@
               </view>
             </view>
           </view>
+          <!-- function area -->
+          <view class='functionArea flex flex-direction'>
+            <button class='warning btn block lg' catchtap='deleteDevice'>删除设备</button>
+          </view>
         </view>
       </view>
     </view>

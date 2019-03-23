@@ -33,18 +33,18 @@ Page({
         userInfo: app.globalData.userInfo
       })
     }
-    // 获取设备列表
-    that.fetchDeviceList()
+    // 获取设备列表 在onShow中获取，避免首次加载重复请求
+    // that.fetchDeviceList()
   },
   // 获取设备列表
   fetchDeviceList: function(cb) {
     let that = this
-    if (that.data.devicePage == -2) {
+    /* if (that.data.devicePage == -2) {
       wx.showToast({
         title: '刷新成功'
       })
       return typeof cb == "function" && cb()
-    }
+    } */
     wx.request({
       header: app.globalData.header,
       url: config.serverUrl + config.fetchOwnedDeviceApi,
@@ -69,15 +69,20 @@ Page({
               }
               item.date = config.toLocaleDateString(item.date)
             })
-            let deviceList = [].concat(that.data.deviceList).concat(devices)
+            let deviceList = [].concat(that.data.deviceList)
+            if (that.data.devicePage < 0) {
+              deviceList = devices
+            } else {
+              deviceList = deviceList.concat(devices)
+            }
             that.setData({
               deviceList: deviceList
             })
-            if (that.data.devicePage) {
+            /* if (that.data.devicePage) {
               that.setData({
                 devicePage: -2
               })
-            }
+            } */
           } else {
             wx.showToast({
               title: '抱歉，获取失败',
@@ -86,6 +91,9 @@ Page({
           }
         }
         typeof cb == "function" && cb()
+      },
+      complete: function() {
+        return typeof cb == "function" && cb()
       }
     })
   },
@@ -316,22 +324,16 @@ Page({
     let that = this
     // get user location
     that.getLocation()
-    // get user info
-    if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      })
-    } else {
-      wx.reLaunch({
-        url: '../login/login',
+    // check user info
+    if (that.data.userInfo) {
+      // refresh devices' list
+      that.fetchDeviceList()
+      //get user local search history
+      let searchHistory = wx.getStorageSync('searchHistory') || []
+      that.setData({
+        searchHistory: searchHistory
       })
     }
-    //get user local search history
-    let searchHistory = wx.getStorageSync('searchHistory') || []
-    that.setData({
-      searchHistory: searchHistory
-    })
   },
   // 下拉刷新事件，下拉重新获取设备列表（未来可能设置分页获取，目前设为-1，获取全部，设为-2表示已全部获取）
   onPullDownRefresh: function() {
