@@ -63,7 +63,7 @@
   </view>
   <!-- Function Area -->
   <view class='bindDevicePanel flex flex-direction'>
-    <button class='{{bindDeviceFromFlag?"primary":"gray"}} btn block lg' catchtap='bindDeviceFromShow'>绑定新设备</button>
+    <button class='{{bindDeviceFromFlag?"primary":"gray"}} btn block lg' catchtap='bindDeviceFormShow'>绑定新设备</button>
     <form class='bindDeviceForm form-box' style='height:{{bindDeviceFromFlag==2?"480rpx":0}};opacity:{{bindDeviceFromFlag==2?"1":0}};' hidden='{{!bindDeviceFromFlag}}' bindsubmit='bindDeviceSubmit'>
       <view class='form-item'>
         <view class='form-title cur'>
@@ -90,7 +90,7 @@
         <input name='deviceName' type='text' placeholder='设备名称(非必需)' class='form-input'></input>
       </view>
       <view class='btn-group-line flex'>
-        <button class='primary btn hollow sm' form-type='reset' catchtap='bindDeviceFromShow'>取消</button>
+        <button class='primary btn hollow sm' form-type='reset' catchtap='bindDeviceFormShow'>取消</button>
         <button class='primary btn hollow sm' form-type='submit'>绑定</button>
       </view>
     </form>

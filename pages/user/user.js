@@ -1,6 +1,7 @@
 // pages/user/user.js
 const app = getApp()
 const config = Object.assign({
+  // 添加设备Api
   addDeviceApi: '/api/addADevice'
 }, app.config)
 Page({
@@ -10,6 +11,7 @@ Page({
    */
   data: {
     userInfo: null,
+    // 设备上传头像临时地址
     deviceAvatarTempSrc: ''
   },
 
@@ -30,7 +32,8 @@ Page({
       })
     }
   },
-  addDeviceFromShow: function() {
+  // 显示添加设备面板（普通用户，level=0，不显示）
+  addDeviceFormShow: function() {
     if (!this.data.addDeviceFromFlag) {
       this.setData({
         addDeviceFromFlag: 1
@@ -52,6 +55,7 @@ Page({
       }, 100)
     }
   },
+  // 添加设备
   addDeviceSubmit: function(e) {
     let that = this
     let value = e.detail.value
@@ -120,6 +124,7 @@ Page({
       }
     })
   },
+  // 选择设备头像
   chooseDeviceAvatar: function(e) {
     var that = this;
     wx.chooseImage({

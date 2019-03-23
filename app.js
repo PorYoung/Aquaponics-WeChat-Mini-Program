@@ -1,16 +1,24 @@
 //app.js
+// 腾讯地图组件 暂时没用
 const QQMapWX = require('./utils/qqmap-wx-jssdk.min.js')
 const config = {
   MaxHistoryLength: 8,
   // mqttHost: 'wxs://localhost:443',
+  // mqtt主机 协议wxs
   mqttHost: 'wxs://iot.smartaq.cn',
+  // mqtt配置
   mqttOptions: {
     connectTimeout: 4000,
+    // 离线消息，不清除记录
+    // 要发送离线也能接收的消息，需要设置qos大于1，retain为true，参考mqtt.js库
     clean: false
   },
+  // web服务器地址
   serverUrl: 'https://iot.smartaq.cn',
   // serverHttpsUrl: 'https://localhost:443',
+  // 鉴权接口，检查登陆、服务器是否有session记录
   permissionCheckUrl: '/api/permissionCheck',
+  // 为url添加服务器主机地址，部分后台返回的url地址（如图片地址）没有主机地址
   addServerHost: function(params) {
     let that = this
     if (params instanceof Array) {
@@ -33,6 +41,7 @@ const config = {
       return params
     }
   },
+  // 将后台返回的Date日期转换为****-**-**格式
   toLocaleDateString: function(date) {
     if (date) {
       return new Date(date).toLocaleDateString().replace(/\//g, '-')
@@ -48,7 +57,9 @@ App({
     wx.setStorageSync('logs', logs)
   },
   globalData: {
+    // 全局用户信息，保存后台返回的用户所有的配置，同时也存储在本地
     userInfo: null,
+    // 地址
     location: {
       name: null,
       address: null,
@@ -56,9 +67,11 @@ App({
       latitude: null
     }
   },
+  // 腾讯地图组件key
   qqmapsdk: new QQMapWX({
     key: 'FFOBZ-N6NRU-BD5V5-2QEZU-H6PM5-WQF5F'
   }),
+  // 获取地址方法
   getLocation: function(callback) {
     let that = this
     let qqmapsdk = that.qqmapsdk
@@ -125,7 +138,12 @@ App({
       }
     })
   },
+  // 全局配置，通过getApp().config获得
   config: config,
+  // 用于检查登陆的函数
+  // flag为true，检查服务器是否有session
+  // flag为false，检查本地是否存储userInfo信息
+  // cb为回调函数
   checkLogin: function(cb, flag) {
     let that = this
 
@@ -175,6 +193,7 @@ App({
     }
     return flag ? serverCheck() : localCheck()
   },
+  // 刷新登陆信息，清除登陆记录
   loginRefresh: function(cb) {
     let that = this
     wx.removeStorageSync('userInfo')

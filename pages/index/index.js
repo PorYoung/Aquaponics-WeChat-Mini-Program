@@ -2,7 +2,9 @@
 //获取应用实例
 const app = getApp()
 const config = Object.assign({
+  // 获取设备Api
   fetchOwnedDeviceApi: '/api/fetchOwnedDevice',
+  // 绑定新设备Api
   bindDeviceApi: '/api/bindDevice',
 }, app.config)
 Page({
@@ -22,6 +24,7 @@ Page({
   },
   onLoad: function() {
     let that = this
+    // 登陆检查
     let state = app.checkLogin(null, true)
     if (state == false) {
       // switch to user login
@@ -33,6 +36,7 @@ Page({
     // 获取设备列表
     that.fetchDeviceList()
   },
+  // 获取设备列表
   fetchDeviceList: function(cb) {
     let that = this
     if (that.data.devicePage == -2) {
@@ -85,7 +89,8 @@ Page({
       }
     })
   },
-  bindDeviceFromShow: function() {
+  // 显示绑定设备面板
+  bindDeviceFormShow: function() {
     if (!this.data.bindDeviceFromFlag) {
       this.setData({
         bindDeviceFromFlag: 1
@@ -106,6 +111,7 @@ Page({
       }, 100)
     }
   },
+  // 提交绑定设备
   bindDeviceSubmit: function(e) {
     let that = this
     let value = e.detail.value
@@ -179,12 +185,14 @@ Page({
       }
     })
   },
+  // 显示搜索面板
   searchBoardOn: function() {
     let that = this
     that.setData({
       searchFocus: true
     })
   },
+  // 隐藏搜索面板
   searchBoardOff: function() {
     let that = this
     that.setData({
@@ -325,6 +333,7 @@ Page({
       searchHistory: searchHistory
     })
   },
+  // 下拉刷新事件，下拉重新获取设备列表（未来可能设置分页获取，目前设为-1，获取全部，设为-2表示已全部获取）
   onPullDownRefresh: function() {
     this.fetchDeviceList(function() {
       wx.stopPullDownRefresh()

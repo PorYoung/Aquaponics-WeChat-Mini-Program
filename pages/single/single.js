@@ -7,8 +7,10 @@
 const app = getApp()
 const mqtt = require('../../utils/mqtt.min.js')
 const config = Object.assign({
+  // 获取设备信息Api
   fetchDeviceInfoApi: '/api/fetchDeviceInfo'
 }, app.config)
+// mqtt客户端实例
 let mqttClient = null
 Page({
 
@@ -20,14 +22,17 @@ Page({
     showDeviceDetail: false,
     showDataDetail: false,
     switchComment: false,
+    // 数据对象
     dataIndex: null
   },
+  // 显示设备详情面板
   showDeviceDetail: function() {
     let that = this
     that.setData({
       showDeviceDetail: !that.data.showDeviceDetail
     })
   },
+  // 切换到数据面板
   switchToContent: function(e) {
     console.log(e, this.data.switchComment)
     if (this.data.switchComment == false) {
@@ -37,6 +42,7 @@ Page({
       switchComment: false
     })
   },
+  // 切换到记录面板
   switchToComment: function(e) {
     console.log(e, this.data.switchComment)
     if (this.data.switchComment == true) {
@@ -46,6 +52,7 @@ Page({
       switchComment: true
     })
   },
+  // 显示数据
   showDataIndex: function() {
 
   },
@@ -54,7 +61,9 @@ Page({
    */
   onLoad: function(options) {
     // console.log(this.data.device, this.data.dataIndex);
+    // 检查登陆
     app.checkLogin(null, true)
+    // mqtt连接客户端clientId，为用户_id
     config.mqttOptions.clientId = app.globalData.userInfo._id
     let that = this
     let deviceId = options.deviceId
@@ -62,8 +71,10 @@ Page({
       userInfo: app.globalData.userInfo,
       deviceId: deviceId
     })
+    // 获取当前设备信息
     that.fetchDeviceInfo()
   },
+  // 获取当前设备信息
   fetchDeviceInfo: function(detail) {
     let that = this
     wx.request({
@@ -97,16 +108,21 @@ Page({
       }
     })
   },
+  // mqtt连接
   mqttConnection: function() {
+    // mqtt配置
     config.mqttOptions = Object.assign(config.mqttOptions, {
       username: userInfo._id,
       password: userInfo.signStr,
       clientId: userInfo._id
     })
+    // 连接mqtt
     mqttClient = mqtt.connect(config.mqttHost, config.mqttOptions)
 
     mqttClient.on('connect', function() {
+      // 订阅公共消息
       mqttClient.subscribe('public/info');
+      // 订阅设备数据消息
       mqttClient.subscribe('device/' + that.data.device._id + '/data')
       console.log('connect');
       console.log('订阅：device/', that.data.device._id + '/data')
@@ -114,7 +130,7 @@ Page({
         connStatus: 'connected'
       });
     })
-
+    // 监听消息接收
     mqttClient.on('message', function(topic, message) {
       // message is Buffer
       let json = null
