@@ -161,7 +161,18 @@ Page({
             let device = res.data.device
             device.avatarUrl = config.addServerHost(device.avatarUrl)
             device.date = config.toLocaleDateString(device.date)
-            let deviceList = [device].concat(that.data.deviceList)
+            let deviceList = that.data.deviceList
+            let isNew = true
+            for (let i = 0; i < deviceList.length; i++) {
+              if (deviceList[i]._id == device._id) {
+                deviceList[i] = device
+                isNew = false
+                break
+              }
+            }
+            if (isNew) {
+              deviceList = [device].concat(deviceList)
+            }
             that.setData({
               deviceList: deviceList
             })

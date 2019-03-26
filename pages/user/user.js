@@ -98,6 +98,7 @@ Page({
             return app.loginRefresh()
           }
           if (data.errMsg == 1) {
+            wx.hideToast()
             wx.showToast({
               title: '添加成功',
               mask: true
@@ -119,9 +120,6 @@ Page({
           showCancel: false
         })
       },
-      complete: function() {
-        wx.hideToast()
-      }
     })
   },
   // 选择设备头像
