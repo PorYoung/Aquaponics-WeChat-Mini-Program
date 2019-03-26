@@ -7,7 +7,7 @@
 </view>
 <view class='timeline'>
   <view class="timeline-box">
-    <view class='timeline-item timeline-sm' wx:for="{{logs}}">
+    <view class='timeline-item timeline-sm' wx:for="{{logs}}" wx:key="index">
       <view class='timeline-main'>
         <view class='badge secondary radius capsule-badge'>
           <text>{{item.date}}</text>

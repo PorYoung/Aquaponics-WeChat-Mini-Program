@@ -1,0 +1,90 @@
+<!--pages/mqttTest/mqttTest.wxml-->
+<view class='container'>
+  <!-- mqtt test -->
+  <view class='connectionSection'>
+    <form bindsubmit='connectionSubmit'>
+      <view>
+        <text>username:</text>
+        <input name='username' value='{{username}}'></input>
+      </view>
+      <view>
+        <text>password:</text>
+        <input name='password' type='password' value='{{password}}'></input>
+      </view>
+      <view>
+        <text>clientId:(generate automaticly)</text>
+        <input name='clientId' value='{{clientId}}' disabled placeholder='自动生成'></input>
+      </view>
+      <button form-type='submit' disabled='{{connStatus=="connected"}}'>连接</button>
+    </form>
+    <view>
+      <text>连接状态：{{connStatus}}</text>
+      <button bindtap='disconnectMqtt' disabled='{{connStatus!="connected"}}'>断开连接</button>
+    </view>
+  </view>
+  <view class='subscribeSection'>
+    <view>------subscribe------</view>
+    <form bindsubmit='subscribeSubmit'>
+      <view>
+        <text>topic:</text>
+        <input name='subscribeTopic' value='{{subscribeTopic}}'></input>
+      </view>
+      <button form-type='submit'>订阅</button>
+    </form>
+    <view>
+      <view>Message Received ({{subscribeMsg.length}})</view>
+      <view wx:for='{{subscribeMsg}}' wx:key='index'>
+        <text></text>
+      </view>
+    </view>
+  </view>
+  <view class='publishSection'>
+    <view>------publish------</view>
+    <form bindsubmit='publishSubmit'>
+      <view>
+        <text>topic:</text>
+        <input name='publishTopic' value='{{publishTopic}}'></input>
+      </view>
+      <view>
+        <text>message:</text>
+        <textarea name='publishMessage' value='{{publishMessage}}'></textarea>
+      </view>
+      <button form-type='submit'>发布</button>
+    </form>
+    <view>
+      <view>Message Published ({{publishMsg.length}})</view>
+      <view wx:for='{{publishMsg}}' wx:key='index'>
+        <text></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- other test -->
+  <form bindsubmit='getDeviceData'>
+    <view>
+      <text>设备ID：</text>
+      <input name='deviceId' type='text' value='{{deviceId}}'></input>
+    </view>
+    <view class="section">
+      <view class="section__title">起始日期选择</view>
+      <picker mode="date" value="{{startDate}}" start="{{pickerStartDate}}" end="{{pickerEndDate}}" bindchange="bindStartDateChange">
+        <view class="picker">
+          当前选择: {{startDate}}
+        </view>
+      </picker>
+    </view>
+    <view class="section">
+      <view class="section__title">截止日期选择</view>
+      <picker mode="date" value="{{stopDate}}" start="{{pickerStartDate}}" end="{{pickerEndDate}}" bindchange="bindStopDateChange">
+        <view class="picker">
+          当前选择: {{stopDate}}
+        </view>
+      </picker>
+    </view>
+    <view>
+      <text>获取数量：</text>
+      <input name='count' type='digit'></input>
+    </view>
+    <button form-type='submit'>获取设备数据</button>
+  </form>
+</view>

@@ -1,4 +1,22 @@
 let logs = [{
+    "date": "3-26",
+    "time": "23:00",
+    "content": "服务器鉴权方式改变，所有等级为2的开发者直接通过验证，接收和发布设备消息；等级为1的管理者只能管理所属的设备；等级为0的用户只能管理自己绑定的设备",
+    "author": "PorYoung"
+  },
+  {
+    "date": "3-26",
+    "time": "23:00",
+    "content": "物联网设备已经能上传设备，服务器新增了删除设备、取消绑定设备、获取设备数据等接口，具体参考文档",
+    "author": "PorYoung"
+  },
+  {
+    "date": "3-26",
+    "time": "23:00",
+    "content": "1.添加mqtt测试页面，用于请求测试\n2.注意所有wx.request()需要加上app.globalData.header，已保证session不变",
+    "author": "PorYoung"
+  },
+  {
     "date": "3-24",
     "time": "12:30",
     "content": "添加开发日志页面，记录开发日志，数据保存在/data/logs.js",

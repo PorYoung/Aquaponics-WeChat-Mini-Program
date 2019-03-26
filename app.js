@@ -3,9 +3,9 @@
 const QQMapWX = require('./utils/qqmap-wx-jssdk.min.js')
 const config = {
   MaxHistoryLength: 8,
-  // mqttHost: 'wxs://localhost:443',
+  mqttHost: 'wxs://localhost:443',
   // mqtt主机 协议wxs
-  mqttHost: 'wxs://iot.smartaq.cn',
+  // mqttHost: 'wxs://iot.smartaq.cn',
   // mqtt配置
   mqttOptions: {
     connectTimeout: 4000,
@@ -14,8 +14,8 @@ const config = {
     clean: false
   },
   // web服务器地址
-  serverUrl: 'https://iot.smartaq.cn',
-  // serverHttpsUrl: 'https://localhost:443',
+  // serverUrl: 'https://iot.smartaq.cn',
+  serverUrl: 'http://localhost:8081',
   // 鉴权接口，检查登陆、服务器是否有session记录
   permissionCheckUrl: '/api/permissionCheck',
   // 为url添加服务器主机地址，部分后台返回的url地址（如图片地址）没有主机地址
@@ -210,5 +210,17 @@ App({
         })
       }
     })
+  },
+  // 返回xxxx-xx-xx格式日期，用于日期选择器
+  normalDate: function(date) {
+    if (date) {
+      if (!(date instanceof Date)) {
+        date = new Date(date)
+      }
+    } else {
+      date = new Date()
+    }
+    let dd = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
+    return dd
   }
 })

@@ -4,7 +4,8 @@
     "pages/index/index",
     "pages/user/user",
     "pages/single/single",
-    "pages/logs/logs"
+    "pages/logs/logs",
+    "pages/mqttTest/mqttTest"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -21,6 +22,10 @@
       {
         "pagePath": "pages/user/user",
         "text": "我的"
+      },
+      {
+        "pagePath": "pages/mqttTest/mqttTest",
+        "text": "Test"
       },
       {
         "pagePath": "pages/logs/logs",
