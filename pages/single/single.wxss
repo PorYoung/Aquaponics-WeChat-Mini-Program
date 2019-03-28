@@ -24,7 +24,8 @@
 }
 
 .topbox-spread {
-  height: calc(100vh - 91rpx);
+  /* height: calc(100vh - 91rpx); */
+  height: 100vh;
 }
 
 .topbox-spread .topbox-collapse {
@@ -67,6 +68,7 @@
 
 .device-bar-detail-spread {
   height: auto;
+  margin: 16rpx 0;
 }
 
 .device-description {
@@ -117,7 +119,7 @@
 
 /* content and comment scroll box */
 
-.content-box, .comment-box {
+.content-box, .comment-box, .data-box {
   display: flex;
   margin-bottom: 91rpx;
   transition: left 0.3s;
@@ -135,12 +137,31 @@
   flex-direction: column;
 }
 
+/* data box */
+
+.data-box {
+  position: absolute;
+  width: 100%;
+  left: 100%;
+  top: 390rpx;
+  flex-direction: column;
+}
+
+.data-box .section {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 32rpx;
+  /* box-shadow: 0 0 1rpx #c5aaee; */
+  font-size: 32rpx;
+}
+
 /* comment box */
 
 .comment-box {
   position: absolute;
   width: 100%;
-  left: 100%;
+  left: 200%;
   top: 390rpx;
 }
 
@@ -190,4 +211,15 @@
 .data-index-progress-text {
   height: 16rpx;
   padding: 0 1rpx;
+}
+
+.boldText {
+  font-weight: bold;
+  padding: 3rpx;
+}
+
+.dataIndexStatus {
+  height: 30rpx;
+  width: 30rpx;
+  border-radius: 50%;
 }

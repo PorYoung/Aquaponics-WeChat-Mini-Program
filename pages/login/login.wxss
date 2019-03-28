@@ -1,20 +1,126 @@
 /* pages/login/login.wxss */
-page{
+
+/* cloud background */
+
+/* 
+.background {
+  width: 100vw !important;
+  height: 100vh !important;
+  position: absolute !important;
+  z-index: -999 !important;
+}
+
+.sky {
+  height: 100vh;
+  background: #007fd5;
+  position: relative;
+  overflow: hidden;
+  animation: sky_background 50s ease-out infinite;
+  transform: translate3d(0, 0, 0);
+}
+
+.clouds_one {
+  background: url("https://localhost/static/image/background/cloud_one.png");
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 300%;
+  animation: cloud_one 50s linear infinite;
+  transform: translate3d(0, 0, 0);
+}
+
+.clouds_two {
+  background: url("https://localhost/static/image/background/cloud_two.png");
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 300%;
+  animation: cloud_two 75s linear infinite;
+  transform: translate3d(0, 0, 0);
+}
+
+.clouds_three {
+  background: url("https://localhost/static/image/background/cloud_three.png");
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 300%;
+  animation: cloud_three 100s linear infinite;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes sky_background {
+  0% {
+    background: #007fd5;
+    color: #007fd5;
+  }
+
+  50% {
+    background: #000;
+    color: #a3d9ff;
+  }
+
+  100% {
+    background: #007fd5;
+    color: #007fd5;
+  }
+}
+
+@keyframes cloud_one {
+  0% {
+    left: 0;
+  }
+
+  100% {
+    left: -200%;
+  }
+}
+
+@keyframes cloud_two {
+  0% {
+    left: 0;
+  }
+
+  100% {
+    left: -200%;
+  }
+}
+
+@keyframes cloud_three {
+  0% {
+    left: 0;
+  }
+
+  100% {
+    left: -200%;
+  }
+} */
+
+/* page */
+
+page {
   overflow: hidden;
 }
-.header{
+
+.header {
   position: absolute;
   width: 100%;
   z-index: -1;
 }
-.header>view{
+
+.header>view {
   width: 100%;
 }
-.rectImg{
-  height:100px;
-  background-image: linear-gradient(to bottom,#39b54a 0,#39b54a 10%,#a8e063);
+
+.rectImg {
+  height: 100px;
+  background-image: linear-gradient(to bottom, #39b54a 0, #39b54a 10%, #a8e063);
 }
-.coverImg{
+
+.coverImg {
   border-bottom: 80px solid #f6f7f9;
   border-left: 100vw solid transparent;
   position: absolute;
@@ -28,14 +134,17 @@ page{
   width: 100%;
   font-size: 48rpx;
 }
-.vice-title{
+
+.vice-title {
   font-size: 24rpx;
   line-height: 48rpx;
 }
-.logoImg{
+
+.logoImg {
   width: 60px;
   height: 60px;
 }
+
 .container {
   display: flex;
   flex-direction: column;
@@ -51,16 +160,14 @@ page{
   align-items: center;
   width: 10rem;
   height: 10rem;
-  /* border: 3px solid transparent; */
-  /* border-radius: 50%; */
-  /* border-image: linear-gradient(#a020f0, #214887); */
-  /* border-image-source: radial-gradient(#A020F0, #214887);
+  /* border: 3px solid transparent; *//* border-radius: 50%; *//* border-image: linear-gradient(#a020f0, #214887); *//* border-image-source: radial-gradient(#A020F0, #214887);
   border-image-slice: 1;
   border-image-width: 1; */
 }
-.loading::before{
+
+.loading::before {
   content: ' ';
-  opacity: .3;
+  opacity: 0.3;
   position: absolute;
   width: 100%;
   height: 100%;
@@ -68,7 +175,7 @@ page{
   border: 3px solid transparent;
   border-radius: 50%;
   border-image: linear-gradient(#39b54a, #a8e063);
-  background: radial-gradient(transparent, rgba(255, 255, 255, .2));
+  background: radial-gradient(transparent, rgba(255, 255, 255, 0.2));
   /* border-image-source: radial-gradient(#A020F0, #214887);
   border-image-slice: 1;
   border-image-width: 1; */
@@ -81,23 +188,24 @@ page{
   /* animation: loading-text 3s ease-in-out infinite alternate; */
 }
 
-.account-text{
+.account-text {
   height: 68rpx;
   width: 11rem;
   text-align: center;
   font-size: 42rpx;
   padding: 8rpx 16rpx;
   margin: 48rpx 0;
-  border-bottom: 6rpx solid rgba(57, 181, 74, .7);
+  border-bottom: 6rpx solid rgba(57, 181, 74, 0.7);
   border-radius: 8rpx;
   /* color: #fff; */
 }
-.btn{
+
+.btn {
   font-size: 48rpx;
   padding: 24rpx;
 }
 
-.notice{
+.notice {
   position: absolute;
   height: 120px;
   bottom: 10rpx;
@@ -121,7 +229,7 @@ page{
     width: 8rem;
     height: 8rem;
     transform: rotate(0);
-    opacity: .3;
+    opacity: 0.3;
   }
 
   100% {

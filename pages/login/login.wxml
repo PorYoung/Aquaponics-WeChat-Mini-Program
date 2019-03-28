@@ -1,5 +1,10 @@
 <!--pages/login/login.wxml-->
 <!-- <image class='rectImg' mode='widthFix' src='/static/images/rect.png' style='height:128.593px;'></image> -->
+<!-- <view class='background sky'>
+  <view class="clouds_one"></view>
+  <view class="clouds_two"></view>
+  <view class="clouds_three"></view>
+</view> -->
 <view class='header'>
   <view class='rectImg'></view>
   <view class='coverImg'></view>

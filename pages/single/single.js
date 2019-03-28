@@ -23,8 +23,73 @@ Page({
     showDeviceDetail: false,
     showDataDetail: false,
     switchComment: false,
+    switchData: false,
+    switchMonitor: true,
+    startDate: null,
+    todayDate: null,
     // 数据对象
-    dataIndex: null
+    dataIndexArray: [],
+    dataIndex: [{
+      id: 'CO2',
+      n: '二氧化碳',
+      val: 50,
+      max: 100,
+      min: 0,
+      fMax: 70,
+      fMin: 20
+    }, {
+      id: 'WT',
+      n: '水温',
+      val: 20,
+      max: 40,
+      min: -10,
+      fMax: 30,
+      fMin: 10
+    }, {
+      id: 'AT',
+      n: '室温',
+      val: 20,
+      max: 40,
+      min: -10,
+      fMax: 30,
+      fMin: 10
+    }],
+    dataTableItems: [{
+      ttitle: 'd1',
+      thead: ['指标', '数值', '状态'],
+      tbody: [
+        ['a', '3.1', -1],
+        ['b', '5.2', 1],
+        ['c', '2.2', 0]
+      ]
+    }, {
+      ttitle: 'd2',
+      thead: ['指标', '数值', '状态'],
+      tbody: [
+        ['a', '4.1', 2],
+        ['b', '3.2', -2],
+        ['c', '3.2', 0]
+      ]
+    }]
+  },
+  // 模拟数据变化
+  dataChangeSimulation: function() {
+    let that = this
+
+    function simulate(d) {
+      let s = Math.ceil((Math.random() - 0.5)) > 0 ? 1 : -1
+      return Math.random() * (d.fMax - d.fMin) * s + d.val
+    }
+    setInterval(() => {
+      let dataIndex = that.data.dataIndex
+      // let dataIndexArray = that.data.dataIndexArray.push(dataIndex)
+      for (let i = 0; i < dataIndex.length; i++) {
+        dataIndex[i].val = simulate(dataIndex[i])
+      }
+      that.setData({
+        dataIndex: dataIndex
+      })
+    }, 5000)
   },
   // 显示设备详情面板
   showDeviceDetail: function() {
@@ -33,24 +98,43 @@ Page({
       showDeviceDetail: !that.data.showDeviceDetail
     })
   },
-  // 切换到数据面板
-  switchToContent: function(e) {
-    console.log(e, this.data.switchComment)
-    if (this.data.switchComment == false) {
+  // 切换到仪表盘面板
+  switchToMonitor: function(e) {
+    if (this.data.switchMonitor == true) {
       return
     }
     this.setData({
+      switchMonitor: true,
+      switchData: false,
+      switchComment: false
+    })
+  },
+  // 切换到数据面板
+  switchToData: function(e) {
+    if (this.data.switchData == true) {
+      return
+    }
+    this.setData({
+      switchData: true,
+      switchMonitor: false,
       switchComment: false
     })
   },
   // 切换到记录面板
   switchToComment: function(e) {
-    console.log(e, this.data.switchComment)
     if (this.data.switchComment == true) {
       return
     }
     this.setData({
-      switchComment: true
+      switchComment: true,
+      switchData: false,
+      switchMonitor: false
+    })
+  },
+  bindDateChange: function(e) {
+    let queryDate = e.detail.value
+    this.setData({
+      queryDate: queryDate
     })
   },
   // 显示数据
@@ -76,6 +160,11 @@ Page({
       }
     })
   },
+  // 跳转到指标详情
+  goToIndexDetail: function(e) {
+    let indexId = e.target.dataset.indexId
+    console.log(indexId)
+  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -87,12 +176,18 @@ Page({
     config.mqttOptions.clientId = app.globalData.userInfo._id
     let that = this
     let deviceId = options.deviceId
+    let today = app.normalDate()
+    let startDate = app.normalDate(new Date(new Date(today).getTime() - 365 * 1000 * 3600 * 24))
     that.setData({
       userInfo: app.globalData.userInfo,
-      deviceId: deviceId
+      deviceId: deviceId,
+      todayDate: today,
+      startDate: startDate
     })
     // 获取当前设备信息
     that.fetchDeviceInfo()
+    // 模拟
+    that.dataChangeSimulation()
   },
   // 获取当前设备信息
   fetchDeviceInfo: function(detail) {
