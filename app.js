@@ -222,5 +222,49 @@ App({
     }
     let dd = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
     return dd
+  },
+  // 返回数据指标对应中文名
+  toIndexName: function(key) {
+    let name = ''
+    switch (key) {
+      case 'TH2O':
+        name = '水温'
+        break
+      case 'PHH2O':
+        name = '酸碱度'
+        break
+      case 'TDS':
+        name = '总溶解固体'
+        break
+      case 'ORP':
+        name = '氧化还原电位'
+        break
+      case 'LEVEL':
+        name = '水位线'
+        break
+      case 'TAIR':
+        name = '室温'
+        break
+      case 'LIGHT':
+        name = '光照强度'
+        break
+      case 'RHSUB':
+        name = '土壤湿度'
+        break
+      case 'RHAIR':
+        name = '空气湿度'
+        break
+    }
+    return name
+  },
+  getSystemWindowWidth: function() {
+    var windowWidth = 320;
+    try {
+      var res = wx.getSystemInfoSync();
+      windowWidth = res.windowWidth;
+    } catch (e) {
+      console.error('getSystemInfoSync failed!');
+    }
+    return windowWidth
   }
 })

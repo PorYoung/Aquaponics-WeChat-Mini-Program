@@ -7,12 +7,16 @@
  */
 const app = getApp()
 const mqtt = require('../../utils/mqtt.min.js')
+var wxCharts = require('../../utils/wxcharts.js');
 const config = Object.assign({
   // 获取设备信息Api
-  fetchDeviceInfoApi: '/api/fetchDeviceInfo'
+  fetchDeviceInfoApi: '/api/fetchDeviceInfo',
+  getDeviceDataApi: '/api/getDeviceData'
 }, app.config)
 // mqtt客户端实例
 let mqttClient = null
+let lineChart = null;
+let startPos = null;
 Page({
 
   /**
@@ -27,27 +31,31 @@ Page({
     switchMonitor: true,
     startDate: null,
     todayDate: null,
+    // data graph canvas
+    canvasHeight: 400,
+    canvasWidth: 320,
+    dataSubRatio: 0.3,
     // 数据对象
     dataIndexArray: [],
     dataIndex: [{
-      id: 'CO2',
-      n: '二氧化碳',
+      id: 'PHH2O',
+      name: '酸碱度',
       val: 50,
       max: 100,
       min: 0,
       fMax: 70,
       fMin: 20
     }, {
-      id: 'WT',
-      n: '水温',
+      id: 'TH2O',
+      name: '水温',
       val: 20,
       max: 40,
       min: -10,
       fMax: 30,
       fMin: 10
     }, {
-      id: 'AT',
-      n: '室温',
+      id: 'TAIR',
+      name: '室温',
       val: 20,
       max: 40,
       min: -10,
@@ -70,7 +78,10 @@ Page({
         ['b', '3.2', -2],
         ['c', '3.2', 0]
       ]
-    }]
+    }],
+    graphData: null,
+    showDataTable: true,
+    showDataGraph: false
   },
   // 模拟数据变化
   dataChangeSimulation: function() {
@@ -78,18 +89,46 @@ Page({
 
     function simulate(d) {
       let s = Math.ceil((Math.random() - 0.5)) > 0 ? 1 : -1
-      return Math.random() * (d.fMax - d.fMin) * s + d.val
+      let val = Math.random() * (d.fMax - d.fMin) * s * 0.125 + Number.parseFloat(d.val)
+      return Number.parseFloat(val).toFixed(2)
     }
-    setInterval(() => {
-      let dataIndex = that.data.dataIndex
-      // let dataIndexArray = that.data.dataIndexArray.push(dataIndex)
+
+    function dataIndexArrayItem(d) {
+      let simuData = {}
+      d.forEach((item) => {
+        let key = item.id
+        simuData[key] = item
+      })
+      let dataItem = {
+        date: new Date(),
+        data: simuData
+      }
+      return dataItem
+    }
+    // setInterval(() => {
+    function genrateData() {
+      // deepCopy
+      let dataIndexJson = JSON.stringify(that.data.dataIndex)
+      let dataIndex = JSON.parse(dataIndexJson)
+      // deepCopy
+      let dataItem = dataIndexArrayItem(dataIndex)
+      let dataIndexArrayJson = JSON.stringify(that.data.dataIndexArray)
+      let dataIndexArray = JSON.parse(dataIndexArrayJson)
+      dataIndexArray.push(dataItem)
+      if (dataIndexArray.length > 200) {
+        dataIndexArray.splice(0, 100)
+      }
       for (let i = 0; i < dataIndex.length; i++) {
         dataIndex[i].val = simulate(dataIndex[i])
       }
       that.setData({
-        dataIndex: dataIndex
+        dataIndex: dataIndex,
+        dataIndexArray: dataIndexArray
       })
-    }, 5000)
+    }
+    setInterval(() => {
+      genrateData()
+    }, 1000)
   },
   // 显示设备详情面板
   showDeviceDetail: function() {
@@ -131,11 +170,205 @@ Page({
       switchMonitor: false
     })
   },
+  // 选择查询日期
   bindDateChange: function(e) {
     let queryDate = e.detail.value
     this.setData({
       queryDate: queryDate
     })
+    // this.queryHistoryData()
+    // 模拟查询
+    let {
+      dataTableItems,
+      graphData
+    } = this.formatDataList(this.data.dataIndexArray)
+    this.setData({
+      dataTableItems: dataTableItems,
+      graphData: graphData
+    })
+    if (this.data.showDataGraph) {
+      this.showDataGraph(true)
+    }
+  },
+  // 切换数据显示方式
+  queryCheckboxChange: function(e) {
+    let that = this
+    let value = e.detail.value
+    if (value && value[0] == 'showGraph') {
+      that.setData({
+        showDataGraph: true,
+        showDataTable: false
+      })
+      that.showDataGraph()
+    } else {
+      that.setData({
+        showDataGraph: false,
+        showDataTable: true
+      })
+    }
+  },
+  // 查询历史数据
+  queryHistoryData: function(queryDate) {
+    let that = this
+    let deviceId = that.data.deviceId
+    let startDate = that.data.startDate
+    let stopDate = that.data.stopDate
+    if (queryDate) {
+      startDate = stopDate = queryDate
+    }
+    wx.request({
+      header: app.globalData.header,
+      url: config.serverUrl + config.getDeviceDataApi,
+      method: 'post',
+      data: {
+        deviceId: deviceId,
+        count: count,
+        startDate: startDate,
+        stopDate: startDate
+      },
+      success: function(res) {
+        if (res.data && res.data.errMsg == 1) {
+          console.log(res.data.data)
+          let data = res.data.data
+          let {
+            dataTableItems,
+            graphData
+          } = that.formatDataList(data)
+          that.setData({
+            dataTableItems: dataTableItems,
+            graphData: graphData
+          })
+        } else {
+          console.log('get data fail.')
+        }
+      }
+    })
+  },
+  // 格式化数据
+  formatDataList: function(data) {
+    let dataTableItems = []
+
+    let graphData = {}
+    graphData.categories = []
+    graphData.dataList = {}
+
+    for (let i = 0; i < data.length; i++) {
+      // table
+      let item = {}
+      item.ttitle = new Date(data[i].date).toLocaleString()
+      item.thead = ['指标', '数值', '状态']
+      let indexData = data[i].data
+      let indexDataArr = []
+      // gragh
+      graphData.categories.push(item.ttitle)
+      Object.keys(indexData).forEach(key => {
+        let name = app.toIndexName(key)
+        // table
+        indexData[key].name = name
+        indexData[key].id = key
+        let arr = []
+        arr[0] = name
+        arr[1] = indexData[key].val
+        arr[2] = indexData[key].stat
+        indexDataArr.push(arr)
+        // graphData
+        graphData.dataList[key] = graphData.dataList[key] || {}
+        graphData.dataList[key].name = name
+        let tempData = graphData.dataList[key].data || []
+        tempData.push(arr[1])
+        graphData.dataList[key].data = tempData
+      })
+      item.tbody = indexDataArr
+      dataTableItems.push(item)
+    }
+    return {
+      dataTableItems,
+      graphData
+    }
+  },
+  // 图表显示数据
+  showDataGraph: function(updateFlag) {
+    let that = this
+    let series = []
+    if (!that.data.graphData)
+      return
+    let graphData = that.data.graphData
+    let dataSubRatio = that.data.dataSubRatio
+    let dataSubGap = Math.round(1 / dataSubRatio)
+    Object.keys(graphData.dataList).forEach((key, index) => {
+      let data = []
+      for (let i = 0; i < graphData.dataList[key].data.length; i++) {
+        if (i % dataSubGap == 0) {
+          data.push(graphData.dataList[key].data[i])
+        }
+      }
+      graphData.dataList[key].data = data
+      series.push(graphData.dataList[key])
+      series[index].format = function(val, name) {
+        return Number.parseFloat(val).toFixed(2);
+      }
+    })
+    let categories = []
+    for (let i = 0; i < graphData.categories.length; i++) {
+      if (i % dataSubGap == 0) {
+        categories.push(graphData.categories[i])
+      }
+    }
+    graphData.categories = categories
+    console.log(series)
+    if (lineChart && updateFlag) {
+      lineChart.updateData({
+        categories: graphData.categories,
+        series: series
+      })
+    } else {
+      let width = app.getSystemWindowWidth()
+      let height = that.data.canvasHeight
+      that.setData({
+        cavasWidth: width,
+        canvasHeight: height
+      })
+      lineChart = new wxCharts({
+        canvasId: 'dataLineCanvas',
+        type: 'line',
+        categories: graphData.categories,
+        animation: false,
+        series: series,
+        xAxis: {
+          disableGrid: false
+        },
+        yAxis: {
+          title: '观测值',
+          format: function(val) {
+            return val.toFixed(2);
+          },
+          min: 0
+        },
+        width: width,
+        height: height,
+        dataLabel: true,
+        dataPointShape: true,
+        enableScroll: true,
+        extra: {
+          lineStyle: 'curve'
+        },
+        background: '#f6f7f9'
+      })
+    }
+  },
+  graphTouchHandler: function(e) {
+    lineChart.scrollStart(e);
+  },
+  graphMoveHandler: function(e) {
+    lineChart.scroll(e);
+  },
+  graphTouchEndHandler: function(e) {
+    lineChart.scrollEnd(e);
+    lineChart.showToolTip(e, {
+      format: function(item, category) {
+        return category + ' ' + item.name + ':' + item.data
+      }
+    });
   },
   // 显示数据
   showDataIndex: function() {
@@ -187,7 +420,7 @@ Page({
     // 获取当前设备信息
     that.fetchDeviceInfo()
     // 模拟
-    that.dataChangeSimulation()
+    // that.dataChangeSimulation()
   },
   // 获取当前设备信息
   fetchDeviceInfo: function(detail) {
@@ -266,53 +499,4 @@ Page({
       console.log('连接失败:', error)
     })
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
-  }
 })

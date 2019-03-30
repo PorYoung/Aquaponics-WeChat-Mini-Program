@@ -246,3 +246,16 @@
 .table.t-blue .t-bg-g {
   background: #e6f3f9;
 }
+
+/* icon nav */
+
+.icon-nav-box {
+  overflow: hidden;
+}
+
+.icon-nav-box .icon-nav {
+  height: auto;
+  width: 100%;
+  padding: 30rpx 0 0;
+  align-items: center;
+}

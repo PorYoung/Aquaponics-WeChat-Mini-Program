@@ -159,9 +159,9 @@
     <view class='data-index {{showDataIndex?"showDataIndex":""}}' wx:for='{{dataIndex}}' wx:key='index' catchtap='showDataIndex' hidden='{{!dataIndex}}' data-index-id='{{item.id}}' catchtap='goToIndexDetail'>
       <view class='data-index-name'>
         <text class='iconfont icon-titles warning-text'></text>
-        <text class='text-lg ml-xs'>{{item.n}}</text>
+        <text class='text-lg ml-xs'>{{item.name}}</text>
       </view>
-      <view class='data-index-info' data-index-id='{{item.n}}'>
+      <view class='data-index-info' data-index-id='{{item.name}}'>
         <view>{{item.val}}</view>
         <block wx:if='{{item.val-item.min<0}}'>
           <view class='data-index-progress'>
@@ -215,7 +215,13 @@
       <view class='warning-text'>暂时什么也没有</view>
     </view>
     <!-- table -->
-    <view class='dataTable'>
+    <view hidden='{{!showDataTable}}' class='dataTable'>
+      <view class='tips'>
+        <view class='dataIndexStatus success'></view>合适
+        <view class='dataIndexStatus warning'></view>正常
+        <view class='dataIndexStatus danger'></view>异常
+        <view class='dataIndexStatus primary'></view>未知
+      </view>
       <view class='table t-green' wx:for='{{dataTableItems}}' wx:key='index' wx:for-index='itemIndex'>
         <view class='ttitle' wx:if='{{item.ttitle}}'>{{item.ttitle}}</view>
         <view class='thead'>
@@ -223,16 +229,18 @@
         </view>
         <view class='tr {{tbodyIndex%2==0?"t-bg-g":"t-bg-w"}}' wx:for='{{item.tbody}}' wx:for-item='tbody' wx:for-index='tbodyIndex'>
           <view class='td' wx:for='{{tbody}}' wx:for-item='td' wx:for-index='tdIndex'>
-            <view wx:if='{{tdIndex==tbody.length-1}}' class='dataIndexStatus {{(td==2||td==-2)?"danger":(td==1||td==-1)?"warning":"success"}}'></view>
+            <view wx:if='{{tdIndex==tbody.length-1}}' class='dataIndexStatus {{(td==2||td==-2)?"danger":(td==1||td==-1)?"warning":(td==0)?"success":"primary"}}'></view>
             <view wx:else>{{td}}</view>
           </view>
         </view>
       </view>
     </view>
+    <!-- data canvas -->
+    <canvas style='width:{{canvasWidth}}px;height:{{canvasHeight}}px;' hidden='{{!showDataGraph}}' canvas-id="dataLineCanvas" disable-scroll="true" class="canvas" bindtouchstart="graphTouchHandler" bindtouchmove="graphMoveHandler" bindtouchend="graphTouchEndHandler"></canvas>
   </view>
   <!-- comment box -->
   <view class='comment-box' style='left:{{switchComment?"0":switchData?"100%":"200%"}}'>
-    <scroll-view class='comment-scroll' scroll-y>
+    <!-- <scroll-view class='comment-scroll' scroll-y>
       <view class="comment" wx:for='{{[1,2,3,4,5,6]}}'>
         <view class="comment-item ph-sm">
           <view class="bar justify-between">
@@ -260,6 +268,27 @@
           </view>
         </view>
       </view>
-    </scroll-view>
+    </scroll-view> -->
+    <view class="icon-nav-box">
+      <view class="icon-nav">
+        <view class="icon-nav-navigator">
+          <view class='iconfont icon-infofill'>
+            <text class='badge mark-badge'>6+</text>
+          </view>
+          <text class="icon-nav-text">预警</text>
+        </view>
+        <view class="icon-nav-navigator">
+          <view class='iconfont icon-subscription'></view>
+          <text class="icon-nav-text">控制</text>
+        </view>
+        <view class="icon-nav-navigator">
+          <view class='iconfont icon-calendar'></view>
+          <text class="icon-nav-text">备忘</text>
+        </view>
+      </view>
+    </view>
+    <view class='comment-content'>
+
+    </view>
   </view>
 </view>
