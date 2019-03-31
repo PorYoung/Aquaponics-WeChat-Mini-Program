@@ -12,7 +12,8 @@ const config = Object.assign({
   // 获取设备信息Api
   fetchDeviceInfoApi: '/api/fetchDeviceInfo',
   getDeviceDataApi: '/api/getDeviceData',
-  deleteDeviceApi: '/api/removeDevice'
+  deleteDeviceApi: '/api/removeDevice',
+  getIndexDefineApi: '/api/getIndexDefine'
 }, app.config)
 // mqtt客户端实例
 let mqttClient = null
@@ -37,39 +38,22 @@ Page({
     queryStartDate: null,
     queryStopDate: null,
     todayDate: null,
+    lastMqttUpdateDate: null,
+    abandonMqttDataCount: 0,
+    correctMqttDataCount: 0,
+    abandonMqttDataRatio: 0,
+    warningMqttDataCount: 0,
     // data graph canvas
     canvasHeight: 400,
     canvasWidth: 320,
-    dataSubRatio: 0.3,
+    dataSubRatio: 0.5,
+    dataSubLimit: 35,
+    dataMoreSubRatio: 0.2,
     // 数据对象
     dataIndexArray: [],
-    dataIndex: [{
-      id: 'PHH2O',
-      name: '酸碱度',
-      val: 50,
-      max: 100,
-      min: 0,
-      fMax: 70,
-      fMin: 20
-    }, {
-      id: 'TH2O',
-      name: '水温',
-      val: 20,
-      max: 40,
-      min: -10,
-      fMax: 30,
-      fMin: 10
-    }, {
-      id: 'TAIR',
-      name: '室温',
-      val: 20,
-      max: 40,
-      min: -10,
-      fMax: 30,
-      fMin: 10
-    }],
+    dataIndex: [],
     dataTableItems: [],
-    waningDataArray: [],
+    warningDataArray: [],
     graphData: null,
     showDataTable: true,
     showDataGraph: false
@@ -105,7 +89,7 @@ Page({
       let dataItem = dataIndexArrayItem(dataIndex)
       let dataIndexArrayJson = JSON.stringify(that.data.dataIndexArray)
       let dataIndexArray = JSON.parse(dataIndexArrayJson)
-      let waningDataArray = JSON.parse(JSON.stringify(that.data.waningDataArray))
+      let warningDataArray = JSON.parse(JSON.stringify(that.data.warningDataArray))
       dataIndexArray.push(dataItem)
       if (dataIndexArray.length > 200) {
         dataIndexArray.splice(0, 100)
@@ -119,17 +103,57 @@ Page({
         }
       }
       if (flag) {
-        waningDataArray.push(dataIndex)
+        warningDataArray.push(dataIndex)
       }
       that.setData({
         dataIndex: dataIndex,
         dataIndexArray: dataIndexArray,
-        waningDataArray: waningDataArray
+        warningDataArray: warningDataArray
       })
     }
     setInterval(() => {
       genrateData()
     }, 1000)
+  },
+  // 获取设备数据定义
+  getIndexDefine: function() {
+    let that = this
+    wx.showLoading({
+      title: '通信中',
+    })
+    wx.request({
+      header: app.globalData.header,
+      url: config.serverUrl + config.getIndexDefineApi,
+      data: {
+        deviceId: that.data.deviceId
+      },
+      success: function(res) {
+        if (res.data && res.data.errMsg == 1) {
+          let dataIndex = []
+          let defines = res.data.define.define
+          Object.keys(defines).forEach(key => {
+            let index = Object.assign(defines[key])
+            index.val = 0
+            index.id = key
+            index.name = app.toIndexName(key)
+            dataIndex.push(index)
+          })
+          that.setData({
+            dataIndex: dataIndex
+          })
+        } else {
+          wx.showToast({
+            title: '获取数据定义失败',
+          })
+          setTimeout(() => {
+            wx.navigateBack()
+          }, 1500)
+        }
+      },
+      complete: function() {
+        wx.hideLoading()
+      }
+    })
   },
   // 显示设备详情面板
   showDeviceDetail: function() {
@@ -170,17 +194,33 @@ Page({
       switchData: false,
       switchMonitor: false
     })
+    if (this.data.switchWarning) {
+      this.setData({
+        warningMqttDataCount: 0
+      })
+    }
   },
   // 切换到预警面板
-  switchToWarning: function(e) {
-    if (this.data.switchWarning == true) {
-      return
+  switchToWarning: function(force) {
+    if (!force) {
+      if (this.data.switchWarning == true) {
+        return
+      }
     }
+    let {
+      dataTableItems
+    } = this.formatWarningDataToTable(this.data.warningDataArray)
     this.setData({
       switchWarning: true,
       switchControl: false,
-      switchIssue: false
+      switchIssue: false,
+      warningMqttDataCount: 0,
+      warningDataTableItems: dataTableItems
     })
+  },
+  switchToCommentAndWarning: function() {
+    this.switchToComment()
+    this.switchToWarning(true)
   },
   // 切换到控制面板
   switchToControl: function(e) {
@@ -210,8 +250,8 @@ Page({
     this.setData({
       queryDate: queryDate
     })
-    // this.queryHistoryData()
-    // 模拟查询
+    this.queryHistoryData()
+    /* // 模拟查询
     let {
       dataTableItems,
       graphData
@@ -222,7 +262,7 @@ Page({
     })
     if (this.data.showDataGraph) {
       this.showDataGraph(true)
-    }
+    } */
   },
   // 选择查询起始日期
   bindStartDateChange: function(e) {
@@ -238,16 +278,16 @@ Page({
       queryStopDate: queryStopDate
     })
   },
-  // 查询预警、备忘记录
+  /* // 查询预警、备忘记录
   queryRecordHistory: function() {
     let that = this
     let {
       dataTableItems
-    } = that.formatDataList(that.data.waningDataArray)
+    } = that.formatDataList(that.data.warningDataArray)
     that.setData({
-      waningDataTableItems: dataTableItems
+      warningDataTableItems: dataTableItems
     })
-  },
+  }, */
   // 切换数据显示方式
   queryCheckboxChange: function(e) {
     let that = this
@@ -257,7 +297,10 @@ Page({
         showDataGraph: true,
         showDataTable: false
       })
-      that.showDataGraph()
+      if (that.data.graphData.categories.length < 20)
+        that.showDataGraph(null, true)
+      else
+        that.showDataGraph()
     } else {
       that.setData({
         showDataGraph: false,
@@ -280,7 +323,6 @@ Page({
       method: 'post',
       data: {
         deviceId: deviceId,
-        count: count,
         startDate: startDate,
         stopDate: startDate
       },
@@ -312,7 +354,23 @@ Page({
     graphData.categories = []
     graphData.dataList = {}
 
+    let dataGap = 0.3
+    if (data.length > 500) {
+      dataGap = Math.round(1 / 0.01)
+    } else if (data.length > 400) {
+      dataGap = Math.round(1 / 0.05)
+    } else if (data.length > 300) {
+      dataGap = Math.round(1 / 0.1)
+    } else if (data.length > 200) {
+      dataGap = Math.round(1 / 0.2)
+    } else if (data.length <= 200) {
+      dataGap = Math.round(1 / this.data.dataSubRatio)
+    }
+
     for (let i = 0; i < data.length; i++) {
+      if (data.length > 100 && i % dataGap != 0) {
+        continue
+      }
       // table
       let item = {}
       item.ttitle = new Date(data[i].date).toLocaleString()
@@ -347,18 +405,30 @@ Page({
     }
   },
   // 图表显示数据
-  showDataGraph: function(updateFlag) {
+  showDataGraph: function(updateFlag, notSubFlag) {
     let that = this
+    // 默认截取数据
+    notSubFlag = notSubFlag || false
     let series = []
     if (!that.data.graphData)
       return
     let graphData = that.data.graphData
+    let dataMoreSubRatio = that.data.dataMoreSubRatio
     let dataSubRatio = that.data.dataSubRatio
-    let dataSubGap = Math.round(1 / dataSubRatio)
+    let dataSubLimit = that.data.dataSubLimit
+    let subRatio = dataSubRatio
+    if (graphData.categories.length > dataSubLimit) {
+      subRatio = dataMoreSubRatio
+    }
+    let dataSubGap = Math.round(1 / subRatio)
     Object.keys(graphData.dataList).forEach((key, index) => {
       let data = []
       for (let i = 0; i < graphData.dataList[key].data.length; i++) {
-        if (i % dataSubGap == 0) {
+        if (!notSubFlag) {
+          if (i % dataSubGap == 0) {
+            data.push(graphData.dataList[key].data[i])
+          }
+        } else {
           data.push(graphData.dataList[key].data[i])
         }
       }
@@ -370,7 +440,11 @@ Page({
     })
     let categories = []
     for (let i = 0; i < graphData.categories.length; i++) {
-      if (i % dataSubGap == 0) {
+      if (!notSubFlag) {
+        if (i % dataSubGap == 0) {
+          categories.push(graphData.categories[i])
+        }
+      } else {
         categories.push(graphData.categories[i])
       }
     }
@@ -433,6 +507,55 @@ Page({
   // 显示数据
   showDataIndex: function() {
 
+  },
+  // 格式化预警数据
+  formatWarningDataToTable: function(data) {
+    let that = this
+    let dataTableItems = []
+
+    for (let i = 0; i < data.length; i++) {
+      // table
+      let item = {}
+      item.ttitle = new Date(data[i].date).toLocaleString()
+      item.warningId = data[i]._id
+      item.thead = ['指标', '数值', '状态']
+      let indexData = data[i].data
+      let indexDataArr = []
+      Object.keys(indexData).forEach(key => {
+        let name = app.toIndexName(key)
+        // table
+        indexData[key].name = name
+        indexData[key].id = key
+        let arr = []
+        arr[0] = name
+        arr[1] = indexData[key].val
+        arr[2] = indexData[key].stat
+        indexDataArr.push(arr)
+      })
+      item.tbody = indexDataArr
+      dataTableItems.push(item)
+    }
+    return {
+      dataTableItems
+    }
+  },
+  // 更新预警备注
+  updateWarningIssueNote: function(e) {
+    let {
+      warningId,
+      warningNote
+    } = e.currentTarget.dataset
+    console.log(warningId, warningNote)
+  },
+  // 显示最新预警消息
+  showLatestWarningData: function() {
+    let {
+      dataTableItems
+    } = this.formatWarningDataToTable(this.data.warningDataArray)
+    this.setData({
+      warningMqttDataCount: 0,
+      warningDataTableItems: dataTableItems
+    })
   },
   // 删除设备
   deleteDevice: function() {
@@ -537,6 +660,8 @@ Page({
     that.fetchDeviceInfo()
     // 模拟
     // that.dataChangeSimulation()
+    // 数据定义，指标初始化
+    that.getIndexDefine()
   },
   // 获取当前设备信息
   fetchDeviceInfo: function(detail) {
@@ -576,9 +701,12 @@ Page({
   },
   // mqtt连接
   mqttConnection: function() {
+    let that = this
+    let userInfo = that.data.userInfo
+    console.log(userInfo)
     // mqtt配置
     config.mqttOptions = Object.assign(config.mqttOptions, {
-      username: userInfo._id,
+      username: 'user/' + userInfo._id,
       password: userInfo.signStr,
       clientId: userInfo._id
     })
@@ -590,6 +718,7 @@ Page({
       mqttClient.subscribe('public/info');
       // 订阅设备数据消息
       mqttClient.subscribe('device/' + that.data.device._id + '/data')
+      mqttClient.subscribe('device/' + that.data.device._id + '/warning')
       console.log('connect');
       console.log('订阅：device/', that.data.device._id + '/data')
       that.setData({
@@ -600,13 +729,48 @@ Page({
     mqttClient.on('message', function(topic, message) {
       // message is Buffer
       let json = null
+      let abandonMqttDataCount = that.data.abandonMqttDataCount
+      let correctMqttDataCount = that.data.correctMqttDataCount
       try {
         json = JSON.parse(message.toString())
       } catch (e) {
         console.log('收到来自', topic, '的消息', message.toString())
+        if (topic == 'device/' + that.data.deviceId + '/data') {
+          abandonMqttDataCount++
+          that.setData({
+            abandonMqttDataCount: abandonMqttDataCount,
+            abandonMqttDataRatio: Number(abandonMqttDataCount / (abandonMqttDataCount + correctMqttDataCount)).toFixed(2)
+          })
+        }
         return
       }
-      console.log('收到来自', topic, '的消息', json)
+      if (topic == 'device/' + that.data.deviceId + '/data') {
+        correctMqttDataCount++
+        that.setData({
+          correctMqttDataCount: correctMqttDataCount,
+          abandonMqttDataRatio: Number(abandonMqttDataCount / (abandonMqttDataCount + correctMqttDataCount)).toFixed(2)
+        })
+        console.log('收到来自', topic, '的消息', json)
+        that.formatToShowIndexData(json)
+      } else if (topic == 'device/' + that.data.deviceId + '/warning') {
+        let warningDataArray = JSON.parse(JSON.stringify(that.data.warningDataArray))
+        if (warningDataArray.length > 10) {
+          warningDataArray = warningDataArray.slice(0, 10)
+        }
+        warningDataArray = [json].concat(warningDataArray)
+        // if (!that.data.switchComment || !that.data.switchWarning) {
+        let warningMqttDataCount = that.data.warningMqttDataCount
+        warningMqttDataCount++
+        warningMqttDataCount = warningMqttDataCount > 99 ? 99 : warningMqttDataCount
+        that.setData({
+          warningMqttDataCount: warningMqttDataCount
+        })
+        // }
+        that.setData({
+          warningDataArray: warningDataArray
+        })
+        console.log('收到来自', topic, '的消息', json)
+      }
     })
 
     mqttClient.on('reconnect', (error) => {
@@ -617,4 +781,25 @@ Page({
       console.log('连接失败:', error)
     })
   },
+  formatToShowIndexData: function(newData) {
+    let that = this
+    let dataIndex = JSON.parse(JSON.stringify(that.data.dataIndex))
+    for (let i = 0; i < dataIndex.length; i++) {
+      let id = dataIndex[i].id
+      dataIndex[i].val = newData[id]
+    }
+    that.setData({
+      dataIndex: dataIndex,
+      lastMqttUpdateDate: new Date().toLocaleString()
+    })
+  },
+  onShow: function() {
+    this.mqttConnection()
+  },
+  onHide: function() {
+    mqttClient.end()
+  },
+  onUnload: function() {
+    mqttClient.end()
+  }
 })

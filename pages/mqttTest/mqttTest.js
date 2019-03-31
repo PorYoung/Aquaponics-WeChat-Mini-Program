@@ -2,19 +2,19 @@
 const app = getApp();
 const mqtt = require('../../utils/mqtt.min.js');
 let config, mqttClient = null;
-/* 
+
 // 本地测试设备账户
 // 当前账户在数据库中的_id
 const mqttUser = '5c8e3f2519bfdc2ae02e25b1'
 // openid md5加密
 const mqttPass = 'f8f980263ff8361e33911302a8fe6d66'
-const mqttDevice = '5c972008c268aa41a0b83af1'
-*/
+const mqttDevice = '5ca066a639184d3940f263e6'
 
-// 服务器测试账户
+
+/* // 服务器测试账户
 const mqttUser = '5c9456f1179b7171ce19e773'
 const mqttPass = 'f8f980263ff8361e33911302a8fe6d66'
-const mqttDevice = '5c98db0322a74e08f9d4a26b'
+const mqttDevice = '5c98db0322a74e08f9d4a26b' */
 Page({
 
   /**
@@ -169,5 +169,8 @@ Page({
         }
       }
     })
+  },
+  onUnload: function() {
+    mqttClient.end();
   }
 })

@@ -156,12 +156,20 @@
   </view>
   <!-- monitor box -->
   <view class='content-box' style='left:{{switchMonitor?"0":switchData?"-100%":"-200%"}}'>
-    <view class='monitor-info'>
+    <view class='monitor-info' catchtap='switchToCommentAndWarning' style='height:{{warningMqttDataCount>0?"100rpx":"0"}}'>
       <view class="list-text">
         您有新的预警消息！
       </view>
       <view class="list-badge">
         <text class='badge mark-badge cur'></text>
+      </view>
+    </view>
+    <view class='monitor-title'>
+      <view class='moitor-title-info'>数据更新于 ： {{lastMqttUpdateDate || '数据正在到达中，请稍后'}}</view>
+      <view hidden='{{lastMqttUpdateDate}}'>部分数据在传输过程中可能丢失，系统将自动丢弃</view>
+      <view hidden='{{!lastMqttUpdateDate}}'>
+        <text>当前错传数：{{abandonMqttDataCount}}</text>
+        <text>错传率：{{abandonMqttDataRatio}}</text>
       </view>
     </view>
     <view class='data-index {{showDataIndex?"showDataIndex":""}}' wx:for='{{dataIndex}}' wx:key='index' catchtap='showDataIndex' hidden='{{!dataIndex}}' data-index-id='{{item.id}}' catchtap='goToIndexDetail'>
@@ -217,6 +225,9 @@
           <checkbox value="{{item.name}}" checked="{{item.checked}}" /> {{item.value}}
         </label>
       </checkbox-group>
+    </view>
+    <view class='data-box-title'>
+      <view class='data-box-title-info'>受限于移动端的性能，可能会进行数据抽稀</view>
     </view>
     <!-- table -->
     <view hidden='{{!showDataTable}}' class='dataTable'>
@@ -281,7 +292,7 @@
       <view class='icon-nav'>
         <view class='icon-nav-navigator {{switchWarning?"active":""}}' catchtap='switchToWarning'>
           <view class='iconfont icon-infofill'>
-            <text class='badge mark-badge'>6+</text>
+            <text class='badge mark-badge' style='opacity:{{warningMqttDataCount==0?0:1}};'>{{warningMqttDataCount}}+</text>
           </view>
           <text class='icon-nav-text'>预警</text>
         </view>
@@ -318,8 +329,9 @@
             <view class='dataIndexStatus warning'></view>正常
             <view class='dataIndexStatus danger'></view>异常
             <view class='dataIndexStatus primary'></view>未知
+            <button class='btn' catchtap='showLatestWarningData'>查看最新</button>
           </view>
-          <view class='table t-green' wx:for='{{waningDataTableItems}}' wx:key='ttitle' wx:for-index='itemIndex'>
+          <view class='table t-green' wx:for='{{warningDataTableItems}}' wx:key='ttitle' wx:for-index='itemIndex'>
             <view class='ttitle' wx:if='{{item.ttitle}}'>{{item.ttitle}}</view>
             <view class='thead'>
               <view class='th' wx:for='{{item.thead}}' wx:for-item='thead' wx:key='*this'>{{thead}}</view>
@@ -333,14 +345,14 @@
             <view class='ttail'>
               <view class='ttl'>
                 <text>备注</text>
-                <button wx:if='{{item.issue.note}}'>修改</button>
-                <button wx:else>添加</button>
+                <button wx:if='{{item.issue.note}}' class='btn' data-warning-id='{{item.warningId}}' data-warning-note='true' catchtap='updateWarningIssueNote'>修改</button>
+                <button class='btn' data-warning-id='{{item.warningId}}' data-warning-note='false' catchtap='updateWarningIssueNote' wx:else>添加</button>
               </view>
               <view class='ttr'>{{item.issue.note}}</view>
             </view>
           </view>
         </view>
-        <view hidden='{{waningDataTableItems&&waningDataTableItems.length>0}}' class='contentIsNull'>
+        <view hidden='{{warningDataTableItems&&warningDataTableItems.length>0}}' class='contentIsNull'>
           <image src='/images/icon/404_1.png' mode='aspectFill'></image>
           <view class='warning-text'>暂时什么也没有</view>
         </view>

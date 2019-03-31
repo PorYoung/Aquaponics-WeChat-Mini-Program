@@ -189,6 +189,11 @@ App({
           } else {
             that.loginRefresh()
           }
+        },
+        fail: function() {
+          wx.showToast({
+            title: '请检查您的网络',
+          })
         }
       })
     }

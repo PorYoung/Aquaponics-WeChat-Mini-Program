@@ -1,5 +1,15 @@
 let logs = [{
     "date": "3-31",
+    "time": "->22:40",
+    "content": "完善预警功能",
+    "author": "PorYoung"
+  }, {
+    "date": "3-31",
+    "time": "->21:00",
+    "content": "1.mqtt连接，实时获取数据\n2.获取历史数据，图表显示数据\n3.遗留问题：数据抽稀\n4.预警\n5.备注\n6.控制",
+    "author": "PorYoung"
+  }, {
+    "date": "3-31",
     "time": "->15:00",
     "content": "single页面\n1.增加删除设备功能\ndetail页面\n1.新增功能：修改数据定义",
     "author": "PorYoung"
