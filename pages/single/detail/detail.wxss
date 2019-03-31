@@ -1,0 +1,24 @@
+/* pages/single/detail/detail.wxss */
+@import '../../display.wxss';
+
+.header {
+  font-size: 64rpx;
+  text-align: center;
+}
+
+.querySection {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 16rpx 32rpx;
+  padding: 16rpx;
+  /* box-shadow: 0 0 1rpx #c5aaee; */
+  font-size: 32rpx;
+  border: 1px solid #eee;
+  border-radius: 8rpx;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.querySection .picker-group {
+  flex: 1;
+}

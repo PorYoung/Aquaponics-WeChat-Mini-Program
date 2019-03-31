@@ -173,7 +173,8 @@
 }
 
 .contentIsNull {
-  height: 680rpx;
+  /* height: 680rpx; */
+  height: 520rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -235,6 +236,14 @@
   font-weight: 24rpx;
 }
 
+.tt {
+  width: 100%;
+  height: auto;
+  padding: 8rpx;
+  font-weight: 24rpx;
+  background: darkgray;
+}
+
 .t-bg-w {
   background: snow;
 }
@@ -258,4 +267,9 @@
   width: 100%;
   padding: 30rpx 0 0;
   align-items: center;
+}
+
+.icon-nav-box .icon-nav-navigator.active {
+  border-bottom: 5rpx solid #f37b1d;
+  border-radius: 3rpx;
 }

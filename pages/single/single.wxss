@@ -129,12 +129,68 @@
   height: calc(100vh - 180rpx);
 }
 
+.querySection {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 16rpx 32rpx;
+  padding: 16rpx;
+  /* box-shadow: 0 0 1rpx #c5aaee; */
+  font-size: 32rpx;
+  border: 1px solid #eee;
+  border-radius: 8rpx;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* .picker-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+} */
+
 /* content box */
 
 .content-box {
   position: relative;
   left: 0;
   flex-direction: column;
+}
+
+.monitor-info {
+  height: 0;
+  transition: height 0.3s;
+  margin: 16rpx;
+  display: flex;
+  border-radius: 16rpx;
+  font-weight: bold;
+  font-size: 32rpx;
+  align-items: center;
+  justify-content: space-around;
+  animation: monitorInfoColorAnimation 3s ease-in-out alternate infinite;
+  overflow: hidden;
+  color: #fff;
+}
+
+.monitor-info .badge {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+@keyframes monitorInfoColorAnimation {
+  0% {
+    background: #f37b1d;
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  100% {
+    background: #dd514c;
+    opacity: 1;
+  }
 }
 
 /* data box */
@@ -147,22 +203,13 @@
   flex-direction: column;
 }
 
-.data-box .section {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 32rpx;
-  /* box-shadow: 0 0 1rpx #c5aaee; */
-  font-size: 32rpx;
-}
-
-.dataTable .tips {
+.dataTable .tips, .warningDataTable .tips {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.dataTable .tips .dataIndexStatus {
+.dataTable .tips .dataIndexStatus, .warningDataTable  .tips .dataIndexStatus {
   margin: 0 12rpx;
 }
 
@@ -173,6 +220,11 @@
   width: 100%;
   left: 200%;
   top: 390rpx;
+  flex-direction: column;
+}
+
+.icon-nav-box {
+  z-index: initial;
 }
 
 .icon-nav-box .icon-nav {
@@ -237,4 +289,64 @@
   height: 30rpx;
   width: 30rpx;
   border-radius: 50%;
+}
+
+/* switch item */
+
+.switch-item {
+  display: flex;
+  align-items: center;
+}
+
+.switch-item text {
+  flex: 1;
+}
+
+.switch-item switch {
+  zoom: 0.7;
+}
+
+/* control panel */
+
+.control-panel {
+  margin: 16rpx 32rpx;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 16rpx;
+  border-radius: 16rpx;
+}
+
+.control-title {
+  font-size: 48rpx;
+}
+
+.control-box {
+  font-size: 32rpx;
+}
+
+.control-box .switch-item {
+  padding: 16rpx 32rpx;
+}
+
+.control-box .control-item {
+  display: flex;
+  padding: 16rpx 32rpx;
+  flex-direction: column;
+}
+
+.control-item .changeCollectTimeBox {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 32rpx;
+}
+
+.changeCollectTimeBox input {
+  flex: 1;
+  margin: 32rpx;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  padding: 0 8rpx;
+}
+
+.control-box .querySection {
+  background: none;
 }

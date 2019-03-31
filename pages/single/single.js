@@ -7,7 +7,7 @@
  */
 const app = getApp()
 const mqtt = require('../../utils/mqtt.min.js')
-var wxCharts = require('../../utils/wxcharts.js');
+const wxCharts = require('../../utils/wxcharts.js')
 const config = Object.assign({
   // 获取设备信息Api
   fetchDeviceInfoApi: '/api/fetchDeviceInfo',
@@ -29,7 +29,12 @@ Page({
     switchComment: false,
     switchData: false,
     switchMonitor: true,
+    switchWarning: true,
+    switchControl: false,
+    switchIssue: false,
     startDate: null,
+    queryStartDate: null,
+    queryStopDate: null,
     todayDate: null,
     // data graph canvas
     canvasHeight: 400,
@@ -62,23 +67,8 @@ Page({
       fMax: 30,
       fMin: 10
     }],
-    dataTableItems: [{
-      ttitle: 'd1',
-      thead: ['指标', '数值', '状态'],
-      tbody: [
-        ['a', '3.1', -1],
-        ['b', '5.2', 1],
-        ['c', '2.2', 0]
-      ]
-    }, {
-      ttitle: 'd2',
-      thead: ['指标', '数值', '状态'],
-      tbody: [
-        ['a', '4.1', 2],
-        ['b', '3.2', -2],
-        ['c', '3.2', 0]
-      ]
-    }],
+    dataTableItems: [],
+    waningDataArray: [],
     graphData: null,
     showDataTable: true,
     showDataGraph: false
@@ -114,16 +104,26 @@ Page({
       let dataItem = dataIndexArrayItem(dataIndex)
       let dataIndexArrayJson = JSON.stringify(that.data.dataIndexArray)
       let dataIndexArray = JSON.parse(dataIndexArrayJson)
+      let waningDataArray = JSON.parse(JSON.stringify(that.data.waningDataArray))
       dataIndexArray.push(dataItem)
       if (dataIndexArray.length > 200) {
         dataIndexArray.splice(0, 100)
       }
+      let flag = false
       for (let i = 0; i < dataIndex.length; i++) {
-        dataIndex[i].val = simulate(dataIndex[i])
+        let val = simulate(dataIndex[i])
+        dataIndex[i].val = val
+        if (val >= dataIndex[i].max || val <= dataIndex[i].min) {
+          flag = true
+        }
+      }
+      if (flag) {
+        waningDataArray.push(dataIndex)
       }
       that.setData({
         dataIndex: dataIndex,
-        dataIndexArray: dataIndexArray
+        dataIndexArray: dataIndexArray,
+        waningDataArray: waningDataArray
       })
     }
     setInterval(() => {
@@ -170,6 +170,39 @@ Page({
       switchMonitor: false
     })
   },
+  // 切换到预警面板
+  switchToWarning: function(e) {
+    if (this.data.switchWarning == true) {
+      return
+    }
+    this.setData({
+      switchWarning: true,
+      switchControl: false,
+      switchIssue: false
+    })
+  },
+  // 切换到控制面板
+  switchToControl: function(e) {
+    if (this.data.switchControl == true) {
+      return
+    }
+    this.setData({
+      switchControl: true,
+      switchWarning: false,
+      switchIssue: false
+    })
+  },
+  // 切换到备忘面板
+  switchToIssue: function(e) {
+    if (this.data.switchIssue == true) {
+      return
+    }
+    this.setData({
+      switchIssue: true,
+      switchControl: false,
+      switchWarning: false
+    })
+  },
   // 选择查询日期
   bindDateChange: function(e) {
     let queryDate = e.detail.value
@@ -189,6 +222,30 @@ Page({
     if (this.data.showDataGraph) {
       this.showDataGraph(true)
     }
+  },
+  // 选择查询起始日期
+  bindStartDateChange: function(e) {
+    let queryStartDate = e.detail.value
+    this.setData({
+      queryStartDate: queryStartDate
+    })
+  },
+  // 选择查询截止日期
+  bindStopDateChange: function(e) {
+    let queryStopDate = e.detail.value
+    this.setData({
+      queryStopDate: queryStopDate
+    })
+  },
+  // 查询预警、备忘记录
+  queryRecordHistory: function() {
+    let that = this
+    let {
+      dataTableItems
+    } = that.formatDataList(that.data.waningDataArray)
+    that.setData({
+      waningDataTableItems: dataTableItems
+    })
   },
   // 切换数据显示方式
   queryCheckboxChange: function(e) {
@@ -395,8 +452,36 @@ Page({
   },
   // 跳转到指标详情
   goToIndexDetail: function(e) {
-    let indexId = e.target.dataset.indexId
+    let indexId = e.currentTarget.dataset.indexId
     console.log(indexId)
+    wx.navigateTo({
+      url: './detail/detail?deviceId=' + this.data.deviceId + '&indexId=' + indexId,
+    })
+  },
+  // 修改数据采集时间
+  changeCollectTimeConfirm: function(e) {
+    let val = e.detail.value
+    this.setData({
+      collectTime: val
+    })
+  },
+  changeCollecTime: function() {
+    let that = this
+    let collectTime = that.data.collectTime
+    if (collectTime > 10 || collectTime < 1) {
+      wx.showToast({
+        icon: 'none',
+        title: '请检查输入'
+      })
+      return
+    }
+    wx.showLoading({
+      title: '正在与设备通信',
+    })
+    // 发送请求
+    setTimeout(() => {
+      wx.hideLoading()
+    }, 3000)
   },
   /**
    * 生命周期函数--监听页面加载
@@ -415,6 +500,8 @@ Page({
       userInfo: app.globalData.userInfo,
       deviceId: deviceId,
       todayDate: today,
+      queryStartDate: today,
+      queryStopDate: today,
       startDate: startDate
     })
     // 获取当前设备信息

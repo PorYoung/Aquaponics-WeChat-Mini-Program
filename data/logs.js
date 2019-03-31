@@ -1,5 +1,10 @@
 let logs = [{
     "date": "3-30",
+    "time": "->9:00",
+    "content": "1.预计增加功能：single页面滚动时导航条固定",
+    "author": "PorYoung"
+  },{
+    "date": "3-30",
     "time": "->8:44",
     "content": "1.使用wxChart数据图显示数据",
     "author": "PorYoung"

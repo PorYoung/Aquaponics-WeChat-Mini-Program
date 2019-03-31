@@ -128,7 +128,7 @@
               <view>
                 <image src='{{device.avatarUrl}}' mode='aspectFill'></image>
               </view>
-              <view wx:for='{{device.images}}' wx:for-item='image'>
+              <view wx:for='{{device.images}}' wx:for-item='image' wx:key='*this'>
                 <image src='{{image}}' mode='aspectFill'></image>
               </view>
             </view>
@@ -156,12 +156,20 @@
   </view>
   <!-- monitor box -->
   <view class='content-box' style='left:{{switchMonitor?"0":switchData?"-100%":"-200%"}}'>
+    <view class='monitor-info'>
+      <view class="list-text">
+        您有新的预警消息！
+      </view>
+      <view class="list-badge">
+        <text class='badge mark-badge cur'></text>
+      </view>
+    </view>
     <view class='data-index {{showDataIndex?"showDataIndex":""}}' wx:for='{{dataIndex}}' wx:key='index' catchtap='showDataIndex' hidden='{{!dataIndex}}' data-index-id='{{item.id}}' catchtap='goToIndexDetail'>
       <view class='data-index-name'>
         <text class='iconfont icon-titles warning-text'></text>
         <text class='text-lg ml-xs'>{{item.name}}</text>
       </view>
-      <view class='data-index-info' data-index-id='{{item.name}}'>
+      <view class='data-index-info'>
         <view>{{item.val}}</view>
         <block wx:if='{{item.val-item.min<0}}'>
           <view class='data-index-progress'>
@@ -197,7 +205,7 @@
   </view>
   <!-- content box -->
   <view class='data-box' style='left:{{switchData?"0":switchMonitor?"100%":"-100%"}}'>
-    <view class='section'>
+    <view class='querySection'>
       <picker mode="date" value="{{queryDate}}" start="{{startDate}}" end="{{todayDate}}" bindchange="bindDateChange">
         <view class="picker">
           选择查询日期: {{queryDate}}
@@ -205,14 +213,10 @@
       </picker>
       <checkbox-group bindchange="queryCheckboxChange">
         <checkbox value="showGraph" checked="{{showDataGraph}}" /> 数据图
-        <label class="queryCheckbox" wx:for="{{queryCheckboxItems}}">
+        <label class="queryCheckbox" wx:for="{{queryCheckboxItems}}" wx:key='*this'>
           <checkbox value="{{item.name}}" checked="{{item.checked}}" /> {{item.value}}
         </label>
       </checkbox-group>
-    </view>
-    <view hidden='{{dataTableItems}}' class='contentIsNull'>
-      <image src='/images/icon/404_1.png' mode='aspectFill'></image>
-      <view class='warning-text'>暂时什么也没有</view>
     </view>
     <!-- table -->
     <view hidden='{{!showDataTable}}' class='dataTable'>
@@ -222,13 +226,13 @@
         <view class='dataIndexStatus danger'></view>异常
         <view class='dataIndexStatus primary'></view>未知
       </view>
-      <view class='table t-green' wx:for='{{dataTableItems}}' wx:key='index' wx:for-index='itemIndex'>
+      <view class='table t-green' wx:for='{{dataTableItems}}' wx:key='ttitle' wx:for-index='itemIndex'>
         <view class='ttitle' wx:if='{{item.ttitle}}'>{{item.ttitle}}</view>
         <view class='thead'>
-          <view class='th' wx:for='{{item.thead}}' wx:for-item='thead'>{{thead}}</view>
+          <view class='th' wx:for='{{item.thead}}' wx:for-item='thead' wx:key='*this'>{{thead}}</view>
         </view>
-        <view class='tr {{tbodyIndex%2==0?"t-bg-g":"t-bg-w"}}' wx:for='{{item.tbody}}' wx:for-item='tbody' wx:for-index='tbodyIndex'>
-          <view class='td' wx:for='{{tbody}}' wx:for-item='td' wx:for-index='tdIndex'>
+        <view class='tr {{tbodyIndex%2==0?"t-bg-g":"t-bg-w"}}' wx:for='{{item.tbody}}' wx:for-item='tbody' wx:for-index='tbodyIndex' wx:key='*this'>
+          <view class='td' wx:for='{{tbody}}' wx:for-item='td' wx:for-index='tdIndex' wx:key='*this'>
             <view wx:if='{{tdIndex==tbody.length-1}}' class='dataIndexStatus {{(td==2||td==-2)?"danger":(td==1||td==-1)?"warning":(td==0)?"success":"primary"}}'></view>
             <view wx:else>{{td}}</view>
           </view>
@@ -236,7 +240,11 @@
       </view>
     </view>
     <!-- data canvas -->
-    <canvas style='width:{{canvasWidth}}px;height:{{canvasHeight}}px;' hidden='{{!showDataGraph}}' canvas-id="dataLineCanvas" disable-scroll="true" class="canvas" bindtouchstart="graphTouchHandler" bindtouchmove="graphMoveHandler" bindtouchend="graphTouchEndHandler"></canvas>
+    <canvas style='width:{{canvasWidth}}px;height:{{canvasHeight}}px;' hidden='{{!showDataGraph || !graphData}}' canvas-id="dataLineCanvas" disable-scroll="true" class="canvas" bindtouchstart="graphTouchHandler" bindtouchmove="graphMoveHandler" bindtouchend="graphTouchEndHandler"></canvas>
+    <view hidden='{{dataTableItems&&dataTableItems.length>0}}' class='contentIsNull'>
+      <image src='/images/icon/404_1.png' mode='aspectFill'></image>
+      <view class='warning-text'>暂时什么也没有</view>
+    </view>
   </view>
   <!-- comment box -->
   <view class='comment-box' style='left:{{switchComment?"0":switchData?"100%":"200%"}}'>
@@ -269,26 +277,114 @@
         </view>
       </view>
     </scroll-view> -->
-    <view class="icon-nav-box">
-      <view class="icon-nav">
-        <view class="icon-nav-navigator">
+    <view class='icon-nav-box'>
+      <view class='icon-nav'>
+        <view class='icon-nav-navigator {{switchWarning?"active":""}}' catchtap='switchToWarning'>
           <view class='iconfont icon-infofill'>
             <text class='badge mark-badge'>6+</text>
           </view>
-          <text class="icon-nav-text">预警</text>
+          <text class='icon-nav-text'>预警</text>
         </view>
-        <view class="icon-nav-navigator">
+        <view class='icon-nav-navigator {{switchControl?"active":""}}' catchtap='switchToControl'>
           <view class='iconfont icon-subscription'></view>
-          <text class="icon-nav-text">控制</text>
+          <text class='icon-nav-text'>控制</text>
         </view>
-        <view class="icon-nav-navigator">
+        <view class='icon-nav-navigator {{switchIssue?"active":""}}' catchtap='switchToIssue'>
           <view class='iconfont icon-calendar'></view>
-          <text class="icon-nav-text">备忘</text>
+          <text class='icon-nav-text'>备忘</text>
         </view>
       </view>
     </view>
     <view class='comment-content'>
-
+      <view class='querySection' hidden='{{switchControl}}'>
+        <view class='picker-group'>
+          <picker mode='date' value='{{queryStartDate}}' start='{{startDate}}' end='{{todayDate}}' bindchange='bindStartDateChange'>
+            <view class='picker'>
+              选择起始日期: {{queryStartDate}}
+            </view>
+          </picker>
+          <picker mode='date' value='{{queryStopDate}}' start='{{startDate}}' end='{{todayDate}}' bindchange='bindStopDateChange'>
+            <view class='picker'>
+              选择截止日期: {{queryStopDate}}
+            </view>
+          </picker>
+        </view>
+        <button class='gray btn hollow' catchtap='queryRecordHistory'>查询</button>
+      </view>
+      <view class='warning-panel' hidden='{{!switchWarning}}'>
+        <view class='warningDataTable'>
+          <view class='tips'>
+            <view class='dataIndexStatus success'></view>合适
+            <view class='dataIndexStatus warning'></view>正常
+            <view class='dataIndexStatus danger'></view>异常
+            <view class='dataIndexStatus primary'></view>未知
+          </view>
+          <view class='table t-green' wx:for='{{waningDataTableItems}}' wx:key='ttitle' wx:for-index='itemIndex'>
+            <view class='ttitle' wx:if='{{item.ttitle}}'>{{item.ttitle}}</view>
+            <view class='thead'>
+              <view class='th' wx:for='{{item.thead}}' wx:for-item='thead' wx:key='*this'>{{thead}}</view>
+            </view>
+            <view class='tr {{tbodyIndex%2==0?"t-bg-g":"t-bg-w"}}' wx:for='{{item.tbody}}' wx:for-item='tbody' wx:for-index='tbodyIndex' wx:key='*this'>
+              <view class='td' wx:for='{{tbody}}' wx:for-item='td' wx:for-index='tdIndex' wx:key='*this'>
+                <view wx:if='{{tdIndex==tbody.length-1}}' class='dataIndexStatus {{(td==2||td==-2)?"danger":(td==1||td==-1)?"warning":(td==0)?"success":"primary"}}'></view>
+                <view wx:else>{{td}}</view>
+              </view>
+            </view>
+            <view class='ttail'>
+              <view class='ttl'>
+                <text>备注</text>
+                <button wx:if='{{item.issue.note}}'>修改</button>
+                <button wx:else>添加</button>
+              </view>
+              <view class='ttr'>{{item.issue.note}}</view>
+            </view>
+          </view>
+        </view>
+        <view hidden='{{waningDataTableItems&&waningDataTableItems.length>0}}' class='contentIsNull'>
+          <image src='/images/icon/404_1.png' mode='aspectFill'></image>
+          <view class='warning-text'>暂时什么也没有</view>
+        </view>
+      </view>
+      <view class='control-panel' hidden='{{!switchControl}}'>
+        <view class='control-title'>
+          <text class='iconfont icon-title success-text'></text> 数据采集
+        </view>
+        <view class='doc-box control-box'>
+          <view class='switch-item'>
+            <text>采集全部数据</text>
+            <switch checked bindchange="controlCollectAllChange" />
+          </view>
+          <view class='control-item'>
+            <text class='control-item-title'>采集数据时间间隔(1~10分钟)</text>
+            <view class='control-item-operation'>
+              <view class='changeCollectTimeBox'>
+                <input placeholder='1min~10min' type='number' maxlength='2' bindinput='changeCollectTimeInput'></input>
+                <button class='gray btn hollow' catchtap='changeCollecTime'>提交</button>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class='control-title'>
+          <text class='iconfont icon-title success-text'></text> 查看操作记录
+        </view>
+        <view class='doc-box control-box' hidden='{{!switchControl}}'>
+          <view class='querySection'>
+            <view class='picker-group'>
+              <picker mode='date' value='{{queryStartDate}}' start='{{startDate}}' end='{{todayDate}}' bindchange='bindStartDateChange'>
+                <view class='picker'>
+                  选择起始日期: {{queryStartDate}}
+                </view>
+              </picker>
+              <picker mode='date' value='{{queryStopDate}}' start='{{startDate}}' end='{{todayDate}}' bindchange='bindStopDateChange'>
+                <view class='picker'>
+                  选择截止日期: {{queryStopDate}}
+                </view>
+              </picker>
+            </view>
+            <button class='gray btn hollow' catchtap='queryRecordHistory'>查询</button>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 </view>

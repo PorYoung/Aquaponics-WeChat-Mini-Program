@@ -18,6 +18,7 @@ const config = {
   serverUrl: 'http://localhost:8081',
   // 鉴权接口，检查登陆、服务器是否有session记录
   permissionCheckUrl: '/api/permissionCheck',
+  observeIndexIdArray: ['TH2O', 'PHH2O', 'TDS', 'ORP', 'LEVEL', 'TAIR', 'LIGHT', 'RHSUB', 'RHAIR'],
   // 为url添加服务器主机地址，部分后台返回的url地址（如图片地址）没有主机地址
   addServerHost: function(params) {
     let that = this
@@ -266,5 +267,9 @@ App({
       console.error('getSystemInfoSync failed!');
     }
     return windowWidth
+  },
+  // 判断是否为数值
+  isNum: function(v) {
+    return !Number.isNaN(Number(v))
   }
 })

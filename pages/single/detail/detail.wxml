@@ -1,0 +1,38 @@
+<!--pages/single/detail/detail.wxml-->
+<view class='container'>
+  <view class='header'>{{indexName}}</view>
+  <view class='item'>
+    <view class="bar item-title">
+      <view class='text-lg'>
+        <text class=' iconfont icon-titles warning-text ml-sm'></text> 数据查询
+      </view>
+    </view>
+    <view class='querySection'>
+      <view class='picker-group'>
+        <picker mode='date' value='{{queryStartDate}}' start='{{startDate}}' end='{{todayDate}}' bindchange='bindStartDateChange'>
+          <view class='picker'>
+            选择起始日期: {{queryStartDate}}
+          </view>
+        </picker>
+        <picker mode='date' value='{{queryStopDate}}' start='{{startDate}}' end='{{todayDate}}' bindchange='bindStopDateChange'>
+          <view class='picker'>
+            选择截止日期: {{queryStopDate}}
+          </view>
+        </picker>
+      </view>
+      <button class='gray btn hollow' catchtap='queryRecordHistory'>查询</button>
+    </view>
+    <canvas hidden='{{!graphData}}' style='width:{{canvasWidth}}px;height:{{canvasHeight}}px;' canvas-id="dataLineCanvas" disable-scroll="true" class="canvas" bindtouchstart="graphTouchHandler" bindtouchmove="graphMoveHandler" bindtouchend="graphTouchEndHandler"></canvas>
+    <view hidden='{{graphData}}' class='contentIsNull'>
+      <image src='/images/icon/404_1.png' mode='aspectFill'></image>
+      <view class='warning-text'>暂时什么也没有</view>
+    </view>
+  </view>
+  <view class='item'>
+    <view class="bar item-title">
+      <view class='text-lg'>
+        <text class=' iconfont icon-titles warning-text ml-sm'></text> 说明
+      </view>
+    </view>
+  </view>
+</view>

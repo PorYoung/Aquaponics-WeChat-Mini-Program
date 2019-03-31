@@ -5,7 +5,8 @@
     "pages/user/user",
     "pages/single/single",
     "pages/logs/logs",
-    "pages/mqttTest/mqttTest"
+    "pages/mqttTest/mqttTest",
+    "pages/single/detail/detail"
   ],
   "window": {
     "backgroundTextStyle": "light",
