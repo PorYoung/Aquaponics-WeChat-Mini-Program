@@ -12,7 +12,9 @@ Page({
   data: {
     userInfo: null,
     // 设备上传头像临时地址
-    deviceAvatarTempSrc: ''
+    deviceAvatarTempSrc: '',
+    observeIndexIdArray: [],
+    observeIndexNameArray: []
   },
 
   /**
@@ -23,14 +25,17 @@ Page({
     /* 
       check login
     */
-    let state = app.checkLogin(null, true)
-    if (state == false) {
-      app.loginRefresh()
-    } else {
-      that.setData({
-        userInfo: app.globalData.userInfo
-      })
-    }
+    app.checkLogin(null, true)
+    let observeIndexIdArray = config.observeIndexIdArray
+    let observeIndexNameArray = []
+    observeIndexIdArray.forEach(item => {
+      observeIndexNameArray.push(app.toIndexName(item))
+    })
+    that.setData({
+      userInfo: app.globalData.userInfo,
+      observeIndexIdArray: observeIndexIdArray,
+      observeIndexNameArray: observeIndexNameArray
+    })
   },
   // 显示添加设备面板（普通用户，level=0，不显示）
   addDeviceFormShow: function() {
@@ -59,7 +64,6 @@ Page({
   addDeviceSubmit: function(e) {
     let that = this
     let value = e.detail.value
-    console.log(value)
     if (!value.devicePassword || !value.devicePasswordConfirm) {
       wx.showToast({
         title: '请输入设备密码',
@@ -74,6 +78,31 @@ Page({
       })
       return
     }
+    let indexDefine = {}
+    Object.keys(value).forEach(key => {
+      let ks = key.split('-')
+      if (ks.length > 1) {
+        let id = ks[0]
+        let type = ks[1]
+        if (that.data.observeIndexIdArray.includes(id)) {
+          indexDefine[id] = indexDefine[id] || {}
+          if (!app.isNum(value[key])) {
+            if (type == 'min') {
+              indexDefine[id][type] = 0
+            } else if (type == 'max') {
+              indexDefine[id][type] = 100
+            } else if (type == 'fMin') {
+              indexDefine[id][type] = 0
+            } else if (type == 'fMax') {
+              indexDefine[id][type] = 100
+            }
+          } else {
+            indexDefine[id][type] = Number(value[key])
+          }
+        }
+      }
+
+    })
     wx.showToast({
       icon: "loading",
       title: "正在添加",
@@ -89,7 +118,8 @@ Page({
         password: value.devicePassword,
         tag: value.deviceTag,
         description: value.deviceDesc,
-        name: value.deviceName
+        name: value.deviceName,
+        define: JSON.stringify(indexDefine)
       },
       success: function(res) {
         if (res && res.statusCode == 200 && res.data) {
@@ -103,6 +133,7 @@ Page({
               title: '添加成功',
               mask: true
             })
+            that.addDeviceFormShow()
           } else {
             wx.showModal({
               title: '出错了',
@@ -137,53 +168,5 @@ Page({
         })
       }
     })
-  },
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
   }
 })

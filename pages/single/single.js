@@ -11,7 +11,8 @@ const wxCharts = require('../../utils/wxcharts.js')
 const config = Object.assign({
   // 获取设备信息Api
   fetchDeviceInfoApi: '/api/fetchDeviceInfo',
-  getDeviceDataApi: '/api/getDeviceData'
+  getDeviceDataApi: '/api/getDeviceData',
+  deleteDeviceApi: '/api/removeDevice'
 }, app.config)
 // mqtt客户端实例
 let mqttClient = null
@@ -295,6 +296,8 @@ Page({
             dataTableItems: dataTableItems,
             graphData: graphData
           })
+        } else if (res.data.errMsg == 403) {
+          return app.loginRefresh()
         } else {
           console.log('get data fail.')
         }
@@ -440,6 +443,32 @@ Page({
       success: function(res) {
         if (res.confirm) {
           // 发送删除请求
+          wx.request({
+            header: app.globalData.header,
+            url: config.serverUrl + config.deleteDeviceApi,
+            method: 'post',
+            data: {
+              deviceId: that.data.deviceId
+            },
+            success: function(res) {
+              if (res.data && res.data.errMsg == 1) {
+                wx.showToast({
+                  title: '删除成功',
+                  mask: true
+                })
+                setTimeout(() => {
+                  wx.navigateBack()
+                }, 1500)
+              } else if (res.data.errMsg == 403) {
+                return app.loginRefresh()
+              } else {
+                wx.showToast({
+                  icon: 'none',
+                  title: '删除失败',
+                })
+              }
+            }
+          })
         }
       },
       fail: function() {
@@ -528,6 +557,8 @@ Page({
           that.setData({
             device: device
           })
+        } else if (res.data.errMsg == 403) {
+          return app.loginRefresh()
         } else {
           console.log(res.data)
           wx.showModal({

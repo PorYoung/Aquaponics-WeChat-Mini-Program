@@ -1,9 +1,29 @@
 let logs = [{
+    "date": "3-31",
+    "time": "->15:00",
+    "content": "single页面\n1.增加删除设备功能\ndetail页面\n1.新增功能：修改数据定义",
+    "author": "PorYoung"
+  }, {
+    "date": "3-31",
+    "time": "->15:00",
+    "content": "1.修改展开动画\n2.其他显示bug",
+    "author": "PorYoung"
+  }, {
+    "date": "3-31",
+    "time": "->10:00",
+    "content": "1.新增功能：添加设备时输入数据定义",
+    "author": "PorYoung"
+  }, {
+    "date": "3-31",
+    "time": "->9:00",
+    "content": "detail页面",
+    "author": "PorYoung"
+  }, {
     "date": "3-30",
     "time": "->9:00",
     "content": "1.预计增加功能：single页面滚动时导航条固定",
     "author": "PorYoung"
-  },{
+  }, {
     "date": "3-30",
     "time": "->8:44",
     "content": "1.使用wxChart数据图显示数据",

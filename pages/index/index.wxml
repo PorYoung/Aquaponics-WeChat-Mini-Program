@@ -64,7 +64,8 @@
   <!-- Function Area -->
   <view class='bindDevicePanel flex flex-direction'>
     <button class='{{bindDeviceFromFlag?"primary":"gray"}} btn block lg' catchtap='bindDeviceFormShow'>绑定新设备</button>
-    <form class='bindDeviceForm form-box' style='height:{{bindDeviceFromFlag==2?"480rpx":0}};opacity:{{bindDeviceFromFlag==2?"1":0}};' hidden='{{!bindDeviceFromFlag}}' bindsubmit='bindDeviceSubmit'>
+    <!-- <form class='bindDeviceForm form-box' style='height:{{bindDeviceFromFlag==2?"480rpx":0}};opacity:{{bindDeviceFromFlag==2?"1":0}};' hidden='{{!bindDeviceFromFlag}}' bindsubmit='bindDeviceSubmit'> -->
+    <form class='bindDeviceForm form-box' style='opacity:{{bindDeviceFromFlag==2?"1":0}};' hidden='{{!bindDeviceFromFlag}}' bindsubmit='bindDeviceSubmit'>
       <view class='form-item'>
         <view class='form-title cur'>
           设备编号
@@ -136,6 +137,10 @@
           </view>
         </view>
       </view>
+    </view>
+    <view hidden='{{deviceList&&deviceList.length>0}}' class='contentIsNull'>
+      <image src='/images/icon/404_1.png' mode='aspectFill'></image>
+      <view class='warning-text'>暂时什么也没有</view>
     </view>
   </view>
 </view>

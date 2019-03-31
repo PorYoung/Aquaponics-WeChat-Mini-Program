@@ -31,7 +31,59 @@
   <view class='item'>
     <view class="bar item-title">
       <view class='text-lg'>
-        <text class=' iconfont icon-titles warning-text ml-sm'></text> 说明
+        <text class=' iconfont icon-titles warning-text ml-sm'></text> 数据阈值
+      </view>
+    </view>
+    <view class='indexDefine'>
+      <!-- <view class='item-title'>{{indexName}}</view> -->
+      <form bindsubmit='updateIndexDefine'>
+        <view class="list-box list-double-col">
+          <view class="list-li">
+            <view class="list-text input-item">
+              <text>最适最小值</text>
+              <input type='digit' name='fMin' value='{{define.define.fMin}}' placeholder='默认0'></input>
+            </view>
+          </view>
+          <view class="list-li">
+            <view class="list-text input-item">
+              <text>最适最大值</text>
+              <input type='digit' name='fMax' value='{{define.define.fMax}}' placeholder='默认100'></input>
+            </view>
+          </view>
+          <view class="list-li">
+            <view class="list-text input-item">
+              <text>预警最小值</text>
+              <input type='digit' name='min' value='{{define.define.min}}' placeholder='默认0'></input>
+            </view>
+          </view>
+          <view class="list-li">
+            <view class="list-text input-item">
+              <text>预警最大值</text>
+              <input type='digit' name='max' value='{{define.define.max}}' placeholder='默认100'></input>
+            </view>
+          </view>
+          <view class='list-li'></view>
+          <view class='list-li'>
+            <button class='primary btn hollow sm' form-type='submit'>提交设置</button>
+          </view>
+        </view>
+      </form>
+      <view class='item-tips'>
+        <view class='item-tips-header'>
+          <image src='{{define.whoSet.avatarUrl}}' mode='aspectFill' class='icon-image'></image>
+          <view class='item-tips-text'>
+            <view>{{define.whoSet.level==2?'开发者':define.whoSet.level==1?'管理员':'用户'}}：{{define.whoSet.nickName}}</view>
+            <view>ID: {{define.whoSet._id}}</view>
+          </view>
+        </view>
+        <view class='item-tips-note'>设置于 {{define.date}}</view>
+      </view>
+    </view>
+    <view class='item'>
+      <view class="bar item-title">
+        <view class='text-lg'>
+          <text class=' iconfont icon-titles warning-text ml-sm'></text> 说明
+        </view>
       </view>
     </view>
   </view>

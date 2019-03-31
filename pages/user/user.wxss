@@ -29,3 +29,29 @@
   font-size: 32rpx;
   padding: 32rpx;
 }
+
+/* indexDefine */
+
+.indexDefine .item-title {
+  padding: 8rpx 16rpx;
+  font-size: 32rpx;
+  background-color: #eee;
+}
+
+.indexDefine .input-item {
+  display: flex;
+  flex-direction: column;
+}
+.input-item text{
+  color: #333;
+}
+
+.indexDefine input {
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  padding: 0 8rpx;
+}
+
+.indexDefine .list-li:last-child {
+  border-bottom: 1px solid #eee;
+}

@@ -1,7 +1,9 @@
 // pages/single/detail/detail.js
 const app = getApp()
 const config = Object.assign({
-  getDeviceDataApi: '/api/getDeviceData'
+  getDeviceDataApi: '/api/getDeviceData',
+  getIndexDefineApi: '/api/getIndexDefine',
+  updateIndexDefineApi: '/api/updateIndexDefine'
 }, app.config)
 const wxCharts = require('../../../utils/wxcharts.js')
 Page({
@@ -10,6 +12,7 @@ Page({
     canvasHeight: 400,
     canvasWidth: 320,
     dataSubRatio: 0.3,
+    define: null
   },
   onLoad: function(options) {
     let that = this
@@ -22,7 +25,6 @@ Page({
     }
     // 检查登陆
     app.checkLogin(null, true)
-    console.log(deviceId, indexId)
     let today = app.normalDate()
     let startDate = app.normalDate(new Date(new Date(today).getTime() - 365 * 1000 * 3600 * 24))
     that.setData({
@@ -35,6 +37,106 @@ Page({
       startDate: startDate,
       indexName: app.toIndexName(indexId)
     })
+    // index define
+    that.getIndexDefine()
+  },
+  // 获取数据定义
+  getIndexDefine: function() {
+    let that = this
+    console.log(that.data.indexId, that.data.deviceId)
+    wx.showLoading({
+      title: '通信中',
+    })
+    wx.request({
+      header: app.globalData.header,
+      url: config.serverUrl + config.getIndexDefineApi,
+      data: {
+        deviceId: that.data.deviceId,
+        indexId: that.data.indexId
+      },
+      success: function(res) {
+        if (res && res.data) {
+          if (res.data.errMsg == 1) {
+            console.log(res.data.define)
+            let define = res.data.define
+            define.whoSet.avatarUrl = config.addServerHost(define.whoSet.avatarUrl)
+            define.date = new Date(define.date).toLocaleString()
+            that.setData({
+              define: define
+            })
+          } else if (res.data.errMsg == -1) {
+            wx.showToast({
+              title: '尚未定义数据',
+            })
+          } else if (res.data.errMsg == 403) {
+            return app.loginRefresh()
+          } else {
+            wx.showModal({
+              title: '出错了',
+              content: '获取失败啦',
+              showCancel: false,
+              confirmText: '了解',
+              complete: function() {
+                wx.navigateBack()
+              }
+            })
+          }
+        }
+      },
+      complete: function() {
+        wx.hideLoading()
+      }
+    })
+  },
+  // 修改数据阈值
+  updateIndexDefine: function(e) {
+    let that = this
+    let value = e.detail.value
+    wx.showLoading({
+      title: '通信中',
+    })
+    wx.request({
+      header: app.globalData.header,
+      url: config.serverUrl + config.updateIndexDefineApi,
+      method: 'post',
+      data: {
+        deviceId: that.data.deviceId,
+        indexId: that.data.indexId,
+        user_id: app.globalData.userInfo._id,
+        define: value
+      },
+      success: function(res) {
+        if (res && res.data) {
+          if (res.data.errMsg == 1) {
+            console.log(res.data.define)
+            let define = res.data.define
+            define.whoSet = app.globalData.userInfo
+            define.date = new Date(define.date).toLocaleString()
+            that.setData({
+              define: define
+            })
+            wx.showToast({
+              title: '设置成功',
+            })
+          } else if (res.data.errMsg == 403) {
+            return app.loginRefresh()
+          } else {
+            wx.showModal({
+              title: '出错了',
+              content: '设置失败啦',
+              showCancel: false,
+              confirmText: '了解',
+              complete: function() {
+                wx.navigateBack()
+              }
+            })
+          }
+        }
+      },
+      fail: function() {
+        wx.hideLoading()
+      }
+    })
   },
   // 查询历史数据
   queryHistoryData: function(queryDate) {
@@ -45,6 +147,9 @@ Page({
     if (queryDate) {
       startDate = stopDate = queryDate
     }
+    wx.showLoading({
+      title: '通信中',
+    })
     wx.request({
       header: app.globalData.header,
       url: config.serverUrl + config.getDeviceDataApi,
@@ -64,9 +169,14 @@ Page({
           that.setData({
             graphData: graphData
           })
+        } else if (res.data.errMsg == 403) {
+          return app.loginRefresh()
         } else {
           console.log('get data fail.')
         }
+      },
+      complete: function() {
+        wx.hideLoading()
       }
     })
   },

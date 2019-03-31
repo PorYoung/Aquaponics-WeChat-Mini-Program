@@ -270,6 +270,6 @@ App({
   },
   // 判断是否为数值
   isNum: function(v) {
-    return !Number.isNaN(Number(v))
+    return !(v === '') && !(v === undefined) && !Number.isNaN(Number(v))
   }
 })

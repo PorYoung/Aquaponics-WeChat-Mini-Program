@@ -22,3 +22,53 @@
 .querySection .picker-group {
   flex: 1;
 }
+
+/* indexDefine */
+
+.indexDefine .item-title {
+  padding: 8rpx 16rpx;
+  font-size: 32rpx;
+  background-color: #eee;
+}
+
+.indexDefine .input-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-item text {
+  color: #333;
+}
+
+.indexDefine input {
+  background: #eee;
+  border-radius: 8rpx;
+  padding: 0 8rpx;
+}
+
+.indexDefine .list-li:last-child {
+  border-bottom: 1px solid #eee;
+}
+
+.indexDefine .item-tips {
+  background: #fff;
+  margin: 16rpx;
+}
+
+.indexDefine .item-tips-header {
+  display: flex;
+  align-items: center;
+}
+
+.indexDefine .item-tips-header image {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.indexDefine .item-tips-header .item-tips-text {
+  margin-left: 32rpx;
+}
+
+.item-tips-note {
+  margin: 8rpx 0;
+}

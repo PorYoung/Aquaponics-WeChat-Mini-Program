@@ -131,10 +131,8 @@ Page({
       })
       return
     }
-    wx.showToast({
-      icon: "loading",
-      title: "正在绑定",
-      mask: true
+    wx.showLoading({
+      title: '通信中',
     })
     wx.request({
       header: app.globalData.header,
@@ -200,7 +198,7 @@ Page({
         })
       },
       complete: function() {
-        wx.hideToast()
+        wx.hideLoading()
       }
     })
   },

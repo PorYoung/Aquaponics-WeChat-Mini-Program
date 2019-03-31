@@ -47,7 +47,13 @@
     <!-- Function Area -->
     <view class='addDevicePanel flex flex-direction' wx:if='{{userInfo.level==1||userInfo.level==2}}'>
       <button class='{{addDeviceFromFlag?"primary":"gray"}} btn block lg' catchtap='addDeviceFormShow'>添加设备</button>
-      <form class='addDeviceForm form-box' style='height:{{addDeviceFromFlag==2?"700rpx":0}};opacity:{{addDeviceFromFlag==2?"1":0}};' hidden='{{!addDeviceFromFlag}}' bindsubmit='addDeviceSubmit'>
+      <!-- <form class='addDeviceForm form-box' style='height:{{addDeviceFromFlag==2?"auto":0}};opacity:{{addDeviceFromFlag==2?"1":0}};' hidden='{{!addDeviceFromFlag}}' bindsubmit='addDeviceSubmit'> -->
+      <form class='addDeviceForm form-box' style='opacity:{{addDeviceFromFlag==2?"1":0}};' hidden='{{!addDeviceFromFlag}}' bindsubmit='addDeviceSubmit'>
+        <view class="bar">
+          <view class='text-lg'>
+            <text class=' iconfont icon-titles warning-text'></text> 设备信息
+          </view>
+        </view>
         <view class='form-box form-avatar-box'>
           <view class='form-avatar' catchtap='chooseDeviceAvatar' style='background-image:url({{deviceAvatarTempSrc}})'>
             <text>修改/上传</text>
@@ -74,7 +80,7 @@
           <input name='devicePasswordConfirm' type='password' placeholder='重复密码' class='form-input'></input>
         </view>
         <view class='form-item'>
-          <view class='form-title'>
+          <view class='form-title cur'>
             设备标签
           </view>
           <input name='deviceTag' type='text' placeholder='设备标签(如:家用)'></input>
@@ -84,6 +90,40 @@
             设备说明
           </view>
           <textarea name='deviceDesc' placeholder='设备说明(最大255)' maxlength='255'></textarea>
+        </view>
+        <view class="bar">
+          <view class='text-lg'>
+            <text class=' iconfont icon-titles warning-text'></text> 数据定义
+          </view>
+        </view>
+        <view class='indexDefine' wx:for='{{observeIndexIdArray}}' wx:key='*this' wx:for-item='idxId'>
+          <view class='item-title'>{{observeIndexNameArray[index]}}</view>
+          <view class="list-box list-double-col">
+            <view class="list-li">
+              <view class="list-text input-item">
+                <text>最适最小值</text>
+                <input type='digit' name='{{idxId+"-fMin"}}' placeholder='默认0'></input>
+              </view>
+            </view>
+            <view class="list-li">
+              <view class="list-text input-item">
+                <text>最适最大值</text>
+                <input type='digit' name='{{idxId+"-fMax"}}' placeholder='默认100'></input>
+              </view>
+            </view>
+            <view class="list-li">
+              <view class="list-text input-item">
+                <text>预警最小值</text>
+                <input type='digit' name='{{idxId+"-min"}}' placeholder='默认0'></input>
+              </view>
+            </view>
+            <view class="list-li">
+              <view class="list-text input-item">
+                <text>预警最大值</text>
+                <input type='digit' name='{{idxId+"-max"}}' placeholder='默认100'></input>
+              </view>
+            </view>
+          </view>
         </view>
         <view class='btn-group-line flex'>
           <button class='primary btn hollow sm' form-type='reset' catchtap='addDeviceFormShow'>取消</button>
