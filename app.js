@@ -3,9 +3,9 @@
 const QQMapWX = require('./utils/qqmap-wx-jssdk.min.js')
 const config = {
   MaxHistoryLength: 8,
-  mqttHost: 'wxs://localhost:443',
+  // mqttHost: 'wxs://localhost:443',
   // mqtt主机 协议wxs
-  // mqttHost: 'wxs://iot.smartaq.cn',
+  mqttHost: 'wxs://iot.smartaq.cn',
   // mqtt配置
   mqttOptions: {
     connectTimeout: 4000,
@@ -14,8 +14,8 @@ const config = {
     clean: false
   },
   // web服务器地址
-  // serverUrl: 'https://iot.smartaq.cn',
-  serverUrl: 'http://localhost:8081',
+  serverUrl: 'https://iot.smartaq.cn',
+  // serverUrl: 'http://localhost:8081',
   // 鉴权接口，检查登陆、服务器是否有session记录
   permissionCheckUrl: '/api/permissionCheck',
   observeIndexIdArray: ['TH2O', 'PHH2O', 'TDS', 'ORP', 'LEVEL', 'TAIR', 'LIGHT', 'RHSUB', 'RHAIR'],
