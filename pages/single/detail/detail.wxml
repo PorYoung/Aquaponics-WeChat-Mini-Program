@@ -20,7 +20,7 @@
           </view>
         </picker>
       </view>
-      <button class='gray btn hollow' catchtap='queryRecordHistory'>查询</button>
+      <button class='gray btn hollow' catchtap='queryHistoryData'>查询</button>
     </view>
     <canvas hidden='{{!graphData}}' style='width:{{canvasWidth}}px;height:{{canvasHeight}}px;' canvas-id="dataLineCanvas" disable-scroll="true" class="canvas" bindtouchstart="graphTouchHandler" bindtouchmove="graphMoveHandler" bindtouchend="graphTouchEndHandler"></canvas>
     <view hidden='{{graphData}}' class='contentIsNull'>

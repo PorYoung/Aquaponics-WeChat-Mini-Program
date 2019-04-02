@@ -44,7 +44,7 @@
   <view class="icon-nav-box category-nav">
     <view class="icon-nav">
       <navigator hover-class="none" class="icon-nav-navigator" url='../search/search?sv=美食&category=美食'>
-        <image src='/images/icon/food.png' class='iconfont icon-image'></image>
+        <image src='/images/icon/message.png' class='iconfont icon-image'></image>
         <text class="icon-nav-text">资讯</text>
       </navigator>
       <navigator hover-class="none" class="icon-nav-navigator" url='../search/search?sv=商品超市&category=商品超市'>
@@ -52,11 +52,11 @@
         <text class="icon-nav-text">购买</text>
       </navigator>
       <navigator hover-class="none" class="icon-nav-navigator" url='../search/search?sv=蔬果生鲜&category=蔬果生鲜'>
-        <image src='/images/icon/vegetable.png' class='iconfont icon-image'></image>
+        <image src='/images/icon/question.png' class='iconfont icon-image'></image>
         <text class="icon-nav-text">疑问</text>
       </navigator>
       <navigator hover-class="none" class="icon-nav-navigator" url='../search/search?sv=甜品饮品&category=甜品饮品'>
-        <image src='/images/icon/dessert.png' class='iconfont icon-image'></image>
+        <image src='/images/icon/consult.png' class='iconfont icon-image'></image>
         <text class="icon-nav-text">客服</text>
       </navigator>
     </view>
@@ -111,7 +111,7 @@
           <view class='goods-list-top s-list-top'>
             <view class='s-header'>
               <view class='text-lg s-name'>{{device.name}}</view>
-              <view class='s-status sm {{device.status==0? "success-text": "warning-text"}}'>{{device.status==0?'正常':'异常'}}</view>
+              <view class='s-status sm {{device.status==undefined||device.status==0? "success-text": "warning-text"}}'>{{device.status==undefined||device.status==0?'正常':'异常'}}</view>
             </view>
             <view class='rating-item'>
               <view class='rating-star' wx:if='{{!!device.rate}}'>

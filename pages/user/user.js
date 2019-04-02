@@ -66,6 +66,7 @@ Page({
     let value = e.detail.value
     if (!value.devicePassword || !value.devicePasswordConfirm) {
       wx.showToast({
+        icon: 'none',
         title: '请输入设备密码',
         mask: true
       })
@@ -73,6 +74,7 @@ Page({
     }
     if (value.devicePassword != value.devicePasswordConfirm) {
       wx.showToast({
+        icon: 'none',
         title: '两次密码不匹配',
         mask: true
       })
@@ -166,6 +168,68 @@ Page({
         that.setData({
           deviceAvatarTempSrc: deviceAvatarTempSrc
         })
+      }
+    })
+  },
+  becomeManager: function() {
+    if (!this.data.becomeManagerFlag) {
+      this.setData({
+        becomeManagerFlag: 1
+      })
+      setTimeout((that = this) => {
+        that.setData({
+          becomeManagerFlag: 2
+        })
+      }, 100)
+    } else {
+      this.setData({
+        becomeManagerFlag: 1
+      })
+      setTimeout((that = this) => {
+        that.setData({
+          becomeManagerFlag: false,
+          managerPassword: ''
+        })
+      }, 100)
+    }
+  },
+  becomeManagerSubmit: function(e) {
+    let that = this
+    let value = e.detail.value
+    if (!value.managerPassword) {
+      wx.showToast({
+        icon: 'none',
+        title: '请输入密码',
+        mask: true
+      })
+      return
+    }
+    wx.showLoading({
+      title: "权限授予中",
+      mask: true
+    })
+    wx.request({
+      header: app.globalData.header,
+      url: config.serverUrl + '/api/becomeManager',
+      method: 'post',
+      data: {
+        user_id: that.data.userInfo._id,
+        password: value.managerPassword
+      },
+      success: function(res) {
+        if (res.data && res.data.errMsg == 1) {
+          wx.showToast({
+            title: 'Okay!',
+          })
+        } else {
+          wx.showToast({
+            icon: 'none',
+            title: '授权失败'
+          })
+        }
+      },
+      complete: function() {
+        wx.hideLoading()
       }
     })
   }

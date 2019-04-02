@@ -131,5 +131,17 @@
         </view>
       </form>
     </view>
+    <view class='addDevicePanel flex flex-direction' wx:if='{{userInfo.level==0}}'>
+      <button class='{{becomeManagerFlag?"primary":"gray"}} btn block lg' catchtap='becomeManager'>成为管理员</button>
+      <form class='addDeviceForm form-box' style='opacity:{{becomeManagerFlag==2?"1":0}};' hidden='{{!becomeManagerFlag}}' bindsubmit='becomeManagerSubmit'>
+        <view class='form-item'>
+          <view class='form-title cur'>
+            通信口令
+          </view>
+          <input name='managerPassword' value='{{managerPassword}}' type='password' placeholder='通信口令' class='form-input'></input>
+          <button class='primary btn hollow sm' form-type='submit'>添加</button>
+        </view>
+      </form>
+    </view>
   </view>
 </view>

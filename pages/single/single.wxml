@@ -364,14 +364,14 @@
         <view class='doc-box control-box'>
           <view class='switch-item'>
             <text>采集全部数据</text>
-            <switch checked bindchange="controlCollectAllChange" />
+            <switch checked='{{!device.runState.stopUploadAllData}}' bindchange="controlCollectAllChange" />
           </view>
           <view class='control-item'>
             <text class='control-item-title'>采集数据时间间隔(1~10分钟)</text>
             <view class='control-item-operation'>
               <view class='changeCollectTimeBox'>
-                <input placeholder='1min~10min' type='number' maxlength='2' bindinput='changeCollectTimeInput'></input>
-                <button class='gray btn hollow' catchtap='changeCollecTime'>提交</button>
+                <input placeholder='1min~10min' name='collectTime' value='{{device.runState.collectInterval}}' type='number' maxlength='2' bindinput='changeCollectTimeInput'></input>
+                <button class='gray btn hollow' catchtap='changeCollectTimeConfirm'>提交</button>
               </view>
             </view>
           </view>

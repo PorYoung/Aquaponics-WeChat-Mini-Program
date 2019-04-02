@@ -5,7 +5,6 @@
     "pages/user/user",
     "pages/single/single",
     "pages/logs/logs",
-    "pages/mqttTest/mqttTest",
     "pages/single/detail/detail"
   ],
   "window": {
@@ -15,22 +14,26 @@
     "navigationBarTextStyle": "white"
   },
   "tabBar": {
+    "selectedColor": "#1296db",
+    "backgroundColor": "#eee",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "/images/icon/device-off.png",
+        "selectedIconPath": "/images/icon/device.png"
       },
       {
         "pagePath": "pages/user/user",
-        "text": "我的"
-      },
-      {
-        "pagePath": "pages/mqttTest/mqttTest",
-        "text": "Test"
+        "text": "我的",
+        "iconPath": "/images/icon/mine-off.png",
+        "selectedIconPath": "/images/icon/mine.png"
       },
       {
         "pagePath": "pages/logs/logs",
-        "text": "日志"
+        "text": "日志",
+        "iconPath": "/images/icon/log-off.png",
+        "selectedIconPath": "/images/icon/log.png"
       }
     ]
   },

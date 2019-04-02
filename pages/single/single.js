@@ -13,7 +13,8 @@ const config = Object.assign({
   fetchDeviceInfoApi: '/api/fetchDeviceInfo',
   getDeviceDataApi: '/api/getDeviceData',
   deleteDeviceApi: '/api/removeDevice',
-  getIndexDefineApi: '/api/getIndexDefine'
+  getIndexDefineApi: '/api/getIndexDefine',
+  changeRunStateApi: '/api/changeRunState'
 }, app.config)
 // mqtt客户端实例
 let mqttClient = null
@@ -143,6 +144,7 @@ Page({
           })
         } else {
           wx.showToast({
+            icon: 'none',
             title: '获取数据定义失败',
           })
           setTimeout(() => {
@@ -610,31 +612,6 @@ Page({
       url: './detail/detail?deviceId=' + this.data.deviceId + '&indexId=' + indexId,
     })
   },
-  // 修改数据采集时间
-  changeCollectTimeConfirm: function(e) {
-    let val = e.detail.value
-    this.setData({
-      collectTime: val
-    })
-  },
-  changeCollecTime: function() {
-    let that = this
-    let collectTime = that.data.collectTime
-    if (collectTime > 10 || collectTime < 1) {
-      wx.showToast({
-        icon: 'none',
-        title: '请检查输入'
-      })
-      return
-    }
-    wx.showLoading({
-      title: '正在与设备通信',
-    })
-    // 发送请求
-    setTimeout(() => {
-      wx.hideLoading()
-    }, 3000)
-  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -791,6 +768,82 @@ Page({
     that.setData({
       dataIndex: dataIndex,
       lastMqttUpdateDate: new Date().toLocaleString()
+    })
+  },
+  // control
+  controlCollectAllChange: function(e) {
+    let that = this
+    let value = e.detail.value
+    if (!value) {
+      mqttClient.publish('device/' + that.data.deviceId + '/instruction', '|1|2|')
+    } else {
+      mqttClient.publish('device/' + that.data.deviceId + '/instruction', '|1|1|')
+    }
+    wx.showLoading({
+      title: '通信中',
+    })
+    // 修改服务器状态
+    wx.request({
+      header: app.globalData.header,
+      url: config.serverUrl + config.changeRunStateApi,
+      method: 'post',
+      data: {
+        code: 1,
+        stopUploadAllData: value
+      },
+      success: function(res) {
+        if (res.data && res.data.errMsg == 1) {
+          that.data.device.runState.stopUploadAllData = value
+          wx.showToast({
+            title: '更新成功',
+          })
+        } else {
+          wx.showToast({
+            icon: 'none',
+            title: '服务器通信失败',
+          })
+        }
+      },
+    })
+  },
+  // 修改数据采集时间
+  changeCollectTimeConfirm: function(e) {
+    let that = this
+    let {
+      collectTime
+    } = e.detail.value
+    if (collectTime > 10 || collectTime < 1) {
+      wx.showToast({
+        icon: 'none',
+        title: '请检查输入'
+      })
+      return
+    }
+    wx.showLoading({
+      title: '正在与设备通信',
+    })
+    // 修改服务器状态
+    wx.request({
+      header: app.globalData.header,
+      url: config.serverUrl + config.changeRunStateApi,
+      method: 'post',
+      data: {
+        code: 2,
+        collectInterval: collectTime
+      },
+      success: function(res) {
+        if (res.data && res.data.errMsg == 1) {
+          that.data.device.runState.collectInterval = collectTime
+          wx.showToast({
+            title: '更新成功',
+          })
+        } else {
+          wx.showToast({
+            icon: 'none',
+            title: '服务器通信失败',
+          })
+        }
+      },
     })
   },
   onShow: function() {

@@ -6,6 +6,8 @@ const config = Object.assign({
   updateIndexDefineApi: '/api/updateIndexDefine'
 }, app.config)
 const wxCharts = require('../../../utils/wxcharts.js')
+let lineChart = null
+let startPos = null
 Page({
   data: {
     indexId: null,
@@ -66,6 +68,7 @@ Page({
             })
           } else if (res.data.errMsg == -1) {
             wx.showToast({
+              icon: 'none',
               title: '尚未定义数据',
             })
           } else if (res.data.errMsg == 403) {
@@ -138,14 +141,32 @@ Page({
       }
     })
   },
+  bindStartDateChange: function(e) {
+    let queryStartDate = e.detail.value
+    this.setData({
+      queryStartDate: queryStartDate
+    })
+  },
+  bindStopDateChange: function(e) {
+    let queryStopDate = e.detail.value
+    this.setData({
+      queryStopDate: queryStopDate
+    })
+  },
   // 查询历史数据
-  queryHistoryData: function(queryDate) {
+  queryHistoryData: function(e, queryDate) {
     let that = this
     let deviceId = that.data.deviceId
-    let startDate = that.data.startDate
-    let stopDate = that.data.stopDate
+    let queryStartDate = that.data.queryStartDate
+    let queryStopDate = that.data.queryStopDate
+    if (new Date(queryStopDate).getTime() < new Date(queryStartDate).getTime()) {
+      return wx.showToast({
+        icon: 'none',
+        title: '请选择正确日期',
+      })
+    }
     if (queryDate) {
-      startDate = stopDate = queryDate
+      queryStartDate = queryStopDate = queryDate
     }
     wx.showLoading({
       title: '通信中',
@@ -156,19 +177,23 @@ Page({
       method: 'post',
       data: {
         deviceId: deviceId,
-        startDate: startDate,
-        stopDate: startDate
+        start: queryStartDate,
+        stop: queryStopDate
       },
       success: function(res) {
         if (res.data && res.data.errMsg == 1) {
           console.log(res.data.data)
           let data = res.data.data
+          if (data.length <= 0) {
+            return wx.hideLoading()
+          }
           let {
             graphData
           } = that.formatDataList(data)
           that.setData({
             graphData: graphData
           })
+          that.showDataGraph()
         } else if (res.data.errMsg == 403) {
           return app.loginRefresh()
         } else {
@@ -199,11 +224,11 @@ Page({
       let indexData = data[i].data[indexId]
       // gragh
       categories.push(new Date(data[i].date).toLocaleString())
-      dataArray.push(indexData[indexId].val)
-      let max = indexData[indexId].max
-      let min = indexData[indexId].min
-      let fMax = indexData[indexId].fMax
-      let fMin = indexData[indexId].fMin
+      dataArray.push(indexData.val)
+      let max = indexData.max
+      let min = indexData.min
+      let fMax = indexData.fMax
+      let fMin = indexData.fMin
       if (app.isNum(max)) {
         maxArray.push(max)
       }
@@ -220,23 +245,28 @@ Page({
     graphData.categories = categories
     graphData.dataList[indexId] = {
       name: indexName,
-      data: dataArray
+      data: dataArray,
+      color: '#36f'
     }
     graphData.dataList['Max'] = {
       name: '预警最大值',
-      data: maxArray
+      data: maxArray,
+      color: '#f15c80'
     }
     graphData.dataList['Min'] = {
       name: '预警最小值',
-      data: minArray
+      data: minArray,
+      color: "#dd514c"
     }
     graphData.dataList['FMax'] = {
       name: '合适最大值',
-      data: fMaxArray
+      data: fMaxArray,
+      color: '#90ed7d'
     }
     graphData.dataList['FMin'] = {
-      name: '合适最大值',
-      data: fMinArray
+      name: '合适最小值',
+      data: fMinArray,
+      color: '#39b54a'
     }
     return {
       graphData
@@ -249,7 +279,20 @@ Page({
       return
     let graphData = that.data.graphData
     let dataSubRatio = that.data.dataSubRatio
-    let dataSubGap = Math.round(1 / dataSubRatio)
+    // let dataSubGap = Math.round(1 / dataSubRatio)
+    let graphLength = that.data.graphData.categories.length
+    let dataSubGap = 0.3
+    if (graphLength > 500) {
+      dataSubGap = Math.round(1 / 0.02)
+    } else if (graphLength > 400) {
+      dataSubGap = Math.round(1 / 0.05)
+    } else if (graphLength > 300) {
+      dataSubGap = Math.round(1 / 0.1)
+    } else if (graphLength > 200) {
+      dataSubGap = Math.round(1 / 0.2)
+    } else if (graphLength <= 200) {
+      dataSubGap = Math.round(1 / dataSubRatio)
+    }
     Object.keys(graphData.dataList).forEach((key, index) => {
       let data = []
       for (let i = 0; i < graphData.dataList[key].data.length; i++) {
