@@ -45,6 +45,9 @@ Page({
       })
       return typeof cb == "function" && cb()
     } */
+    wx.showLoading({
+      title: '努力加载中',
+    })
     wx.request({
       header: app.globalData.header,
       url: config.serverUrl + config.fetchOwnedDeviceApi,
@@ -93,6 +96,7 @@ Page({
         typeof cb == "function" && cb()
       },
       complete: function() {
+        wx.hideLoading()
         return typeof cb == "function" && cb()
       }
     })
@@ -218,6 +222,10 @@ Page({
   },
   searchSuggestion: function(e) {
     let that = this
+    return wx.showToast({
+      icon: 'none',
+      title: '功能开发中',
+    })
     /*request for data
 
     */
@@ -240,6 +248,10 @@ Page({
   },
   searchSubmit: function(e) {
     let that = this
+    return wx.showToast({
+      icon: 'none',
+      title: '功能开发中',
+    })
     let dataset = e.currentTarget.dataset
     let sv = null
     //search from suggestion

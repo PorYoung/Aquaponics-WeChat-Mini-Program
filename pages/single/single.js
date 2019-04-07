@@ -319,6 +319,9 @@ Page({
     if (queryDate) {
       startDate = stopDate = queryDate
     }
+    wx.showLoading({
+      title: '查询中'
+    })
     wx.request({
       header: app.globalData.header,
       url: config.serverUrl + config.getDeviceDataApi,
@@ -344,7 +347,14 @@ Page({
           return app.loginRefresh()
         } else {
           console.log('get data fail.')
+          wx.showToast({
+            icon: 'none',
+            title: '获取失败'
+          })
         }
+      },
+      complete: function() {
+        wx.hideLoading()
       }
     })
   },
@@ -567,6 +577,9 @@ Page({
       content: '确定要删除该设备吗？删除后将无法复原，影响用户使用',
       success: function(res) {
         if (res.confirm) {
+          wx.showLoading({
+            title: '通信中',
+          })
           // 发送删除请求
           wx.request({
             header: app.globalData.header,
@@ -601,6 +614,9 @@ Page({
           icon: 'none',
           title: '删除失败',
         })
+      },
+      complete: function() {
+        wx.hideLoading()
       }
     })
   },
@@ -643,6 +659,9 @@ Page({
   // 获取当前设备信息
   fetchDeviceInfo: function(detail) {
     let that = this
+    wx.showLoading({
+      title: '努力加载中',
+    })
     wx.request({
       header: app.globalData.header,
       url: config.serverUrl + config.fetchDeviceInfoApi,
@@ -673,6 +692,9 @@ Page({
             }
           })
         }
+      },
+      complete: function() {
+        wx.hideLoading()
       }
     })
   },
@@ -774,7 +796,7 @@ Page({
   controlCollectAllChange: function(e) {
     let that = this
     let value = e.detail.value
-    if (!value) {
+    if (!!value) {
       mqttClient.publish('device/' + that.data.deviceId + '/instruction', '|1|2|')
     } else {
       mqttClient.publish('device/' + that.data.deviceId + '/instruction', '|1|1|')
@@ -844,6 +866,18 @@ Page({
           })
         }
       },
+    })
+  },
+  queryInstructionHistory: function() {
+    return wx.showToast({
+      icon: 'none',
+      title: '功能开发中',
+    })
+  },
+  queryRecordHistory: function() {
+    return wx.showToast({
+      icon: 'none',
+      title: '功能开发中',
     })
   },
   onShow: function() {

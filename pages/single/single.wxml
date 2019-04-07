@@ -155,7 +155,7 @@
     </view>
   </view>
   <!-- monitor box -->
-  <view class='content-box' style='left:{{switchMonitor?"0":switchData?"-100%":"-200%"}}'>
+  <view class='content-box' style='left:{{switchMonitor?"0":switchData?"-100%":"-200%"}};height:{{switchMonitor?"auto":0}};overflow:{{switchMonitor?"auto":"hidden"}};'>
     <view class='monitor-info' catchtap='switchToCommentAndWarning' style='height:{{warningMqttDataCount>0?"100rpx":"0"}}'>
       <view class="list-text">
         您有新的预警消息！
@@ -212,7 +212,7 @@
     </view>
   </view>
   <!-- content box -->
-  <view class='data-box' style='left:{{switchData?"0":switchMonitor?"100%":"-100%"}}'>
+  <view class='data-box' style='left:{{switchData?"0":switchMonitor?"100%":"-100%"}};height:{{switchData?"auto":0}};overflow:{{switchMonitor?"auto":"hidden"}};'>
     <view class='querySection'>
       <picker mode="date" value="{{queryDate}}" start="{{startDate}}" end="{{todayDate}}" bindchange="bindDateChange">
         <view class="picker">
@@ -258,7 +258,7 @@
     </view>
   </view>
   <!-- comment box -->
-  <view class='comment-box' style='left:{{switchComment?"0":switchData?"100%":"200%"}}'>
+  <view class='comment-box' style='left:{{switchComment?"0":switchData?"100%":"200%"}};height:{{switchComment?"auto":0}};overflow:{{switchMonitor?"auto":"hidden"}};'>
     <!-- <scroll-view class='comment-scroll' scroll-y>
       <view class="comment" wx:for='{{[1,2,3,4,5,6]}}'>
         <view class="comment-item ph-sm">
@@ -393,7 +393,7 @@
                 </view>
               </picker>
             </view>
-            <button class='gray btn hollow' catchtap='queryRecordHistory'>查询</button>
+            <button class='gray btn hollow' catchtap='queryInstructionHistory'>查询</button>
           </view>
         </view>
       </view>
