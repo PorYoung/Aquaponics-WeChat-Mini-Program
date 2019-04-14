@@ -34,8 +34,6 @@ Page({
       deviceId: deviceId,
       indexId: indexId,
       todayDate: today,
-      queryStartDate: today,
-      queryStopDate: today,
       startDate: startDate,
       indexName: app.toIndexName(indexId)
     })
@@ -157,16 +155,21 @@ Page({
   queryHistoryData: function(e, queryDate) {
     let that = this
     let deviceId = that.data.deviceId
-    let queryStartDate = that.data.queryStartDate
-    let queryStopDate = that.data.queryStopDate
-    if (new Date(queryStopDate).getTime() < new Date(queryStartDate).getTime()) {
+    let queryStartDate = new Date(that.data.queryStartDate)
+    let queryStopDate = new Date(that.data.queryStopDate)
+    queryStartDate = new Date(queryStartDate.getTime())
+    queryStopDate = new Date(queryStopDate.getTime() + 1000 * 3600 * 24)
+    if (queryStopDate.getTime() < queryStartDate.getTime()) {
       return wx.showToast({
         icon: 'none',
         title: '请选择正确日期',
       })
+    } else if (queryStartDate.getTime() == queryStopDate.getTime()) {
+      queryStopDate = new Date(queryStartDate.getTime() + 1000 * 3600 * 24)
     }
     if (queryDate) {
-      queryStartDate = queryStopDate = queryDate
+      queryStartDate = new Date(queryDate).getTime()
+      queryStopDate = new Date(queryStartDate.getTime() + 1000 * 3600 * 24)
     }
     wx.showLoading({
       title: '通信中',

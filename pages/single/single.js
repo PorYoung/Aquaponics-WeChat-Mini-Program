@@ -252,7 +252,7 @@ Page({
     this.setData({
       queryDate: queryDate
     })
-    this.queryHistoryData()
+    this.queryHistoryData(queryDate)
     /* // 模拟查询
     let {
       dataTableItems,
@@ -314,10 +314,11 @@ Page({
   queryHistoryData: function(queryDate) {
     let that = this
     let deviceId = that.data.deviceId
-    let startDate = that.data.startDate
-    let stopDate = that.data.stopDate
+    let startDate = that.data.queryStartDate
+    let stopDate = that.data.queryStopDate
     if (queryDate) {
-      startDate = stopDate = queryDate
+      startDate = new Date(queryDate)
+      stopDate = new Date(startDate.getTime() + 1000 * 3600 * 24)
     }
     wx.showLoading({
       title: '查询中'
@@ -328,8 +329,8 @@ Page({
       method: 'post',
       data: {
         deviceId: deviceId,
-        startDate: startDate,
-        stopDate: startDate
+        start: startDate,
+        stop: stopDate
       },
       success: function(res) {
         if (res.data && res.data.errMsg == 1) {
